@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "644376428303",
+    "project_id": "chat-gpt-app-4962b",
+    "storage_bucket": "chat-gpt-app-4962b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644376428303:android:82c8d183caf9c66746087a",
+        "android_client_info": {
+          "package_name": "com.aichatbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644376428303-qoisbagqb5bvn5fu3tfg78a95dq4ko9m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAmF9AML85OKElef3YDKFeO56rIIy9uTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "644376428303-qoisbagqb5bvn5fu3tfg78a95dq4ko9m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644376428303:android:3e43b57669d4723446087a",
+        "android_client_info": {
+          "package_name": "com.smart.ai.chat.bot.assistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644376428303-qoisbagqb5bvn5fu3tfg78a95dq4ko9m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAmF9AML85OKElef3YDKFeO56rIIy9uTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "644376428303-qoisbagqb5bvn5fu3tfg78a95dq4ko9m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

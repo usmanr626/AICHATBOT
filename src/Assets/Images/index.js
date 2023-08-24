@@ -1,0 +1,18 @@
+export const IMAGES = {
+  mainImage: require('./MainScreen.png'),
+  AICHATBOT: require('./newImage.png'),
+  bgRight: require('./bgRight.png'),
+  bgLeft: require('./bgLeft.png'),
+  backButton: require('./backButton.png'),
+  shareApp: require('./shareApp.png'),
+  rateApp: require('./rateApp.png'),
+  privacyPolicy: require('./privacyPolicy.png'),
+  moreApps: require('./moreApps.png'),
+  muteButton: require('./muteButton.png'),
+  settingsButton: require('./settingsButton.png'),
+  menuButton: require('./menuButton.png'),
+  micButton: require('./micButton.png'),
+  sendButton: require('./sendButton.png'),
+  chatIcon: require('./chatIcon.png'),
+  cleanHistory: require('./cleanHistory.png'),
+};
