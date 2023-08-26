@@ -427,7 +427,10 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     console.log('Start');
     setText('');
     try {
-      await Voice.start('en');
+      await Voice.start('en_US', {
+        RECOGNIZER_ENGINE: 'GOOGLE',
+        EXTRA_PARTIAL_RESULTS: true,
+      });
       Voice.onSpeechPartialResults = partialResults => {
         if (partialResults.value && partialResults.value.length > 0) {
           setResult(partialResults.value[0]); // Update the result with the partial speech
