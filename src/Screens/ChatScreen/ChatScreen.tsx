@@ -1,43 +1,35 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import remoteConfig from '@react-native-firebase/remote-config';
+import Voice from '@react-native-voice/voice';
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  View,
-  SafeAreaView,
+  ActivityIndicator,
+  Alert,
+  FlatList,
   Image,
   ImageBackground,
-  Pressable,
-  TextInput,
-  Text,
-  FlatList,
   Keyboard,
-  ActivityIndicator,
-  Platform,
-  Modal as NewModal,
-  TouchableOpacity,
   PermissionsAndroid,
-  Alert,
+  Platform,
+  Pressable,
+  SafeAreaView,
   ScrollView,
-  NativeModules,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {IMAGES} from '../../Assets/Images';
-import styles from './styles';
-import {ChatScreenHeader} from '../../Components/ChatScreenHeader';
-import Modal from 'react-native-modal';
-import {LABELS} from '../../Assets/Labels';
-import {CONSTANTS} from '../../Assets/Constants';
-import axios from 'axios';
-import Voice from '@react-native-voice/voice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   RewardedAd,
   RewardedAdEventType,
   TestIds,
 } from 'react-native-google-mobile-ads';
-import {CustomTextButton} from '../../Components/CustomTextButton';
-import remoteConfig from '@react-native-firebase/remote-config';
-
-// const adUnitId = TestIds.REWARDED;
-
-// console.warn('DEV:', __DEV__);
+import Modal from 'react-native-modal';
+import {CONSTANTS} from '../../Assets/Constants';
+import {IMAGES} from '../../Assets/Images';
+import {LABELS} from '../../Assets/Labels';
+import {ChatScreenHeader} from '../../Components/ChatScreenHeader';
+import styles from './styles';
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
@@ -45,14 +37,8 @@ const adUnitId = __DEV__
   ? 'ca-app-pub-4161728863134324/4040155771'
   : 'ca-app-pub-4161728863134324/7479555950';
 
-// const adUnitId =
-// Platform.OS === 'ios'
-//   ? 'ca-app-pub-4161728863134324/4040155771'
-//   : 'ca-app-pub-4161728863134324/7479555950';
-
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
-  // keywords: ['fashion', 'clothing'],
 });
 
 type ChatScreenPropTypes = {
@@ -132,18 +118,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
     checkMicPermission();
   }, []);
-
-  // PERMISSIONS
-  // const fetchRemoteConfig = async () => {
-  //   try {
-  //     await remoteConfig().fetchAndActivate(); // Fetch and activate the config
-  //     const adsEnabled = remoteConfig().getValue('ads_enabled').asBoolean();
-  //     return adsEnabled;
-  //   } catch (error) {
-  //     console.error('Error fetching remote config:', error);
-  //     return false; // Default to false if there's an error
-  //   }
-  // };
 
   useEffect(() => {
     const getInitialCategoryData = async () => {
@@ -487,7 +461,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (text.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked >= 1) {
+    if (questionsAsked >= 4) {
       Alert.alert(
         'Limit reached',
         'you can extend your limit by watching an ad',
