@@ -52,7 +52,7 @@ const adUnitId = __DEV__
 
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
-  keywords: ['fashion', 'clothing'],
+  // keywords: ['fashion', 'clothing'],
 });
 
 type ChatScreenPropTypes = {
@@ -241,7 +241,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       unsubscribeLoaded();
       unsubscribeEarned();
     };
-  }, []);
+  }, [questionsAsked]);
 
   // ads Logic
 
@@ -487,7 +487,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (text.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked >= 4) {
+    if (questionsAsked >= 1) {
       Alert.alert(
         'Limit reached',
         'you can extend your limit by watching an ad',
@@ -498,6 +498,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
               setLoading(true),
                 setTimeout(() => {
                   try {
+                    // rewarded.load();
                     rewarded.show();
                     // showRewardedAd();
                   } catch (error) {
@@ -515,7 +516,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
                   }
 
                   // setLoading(false);
-                }, 3000);
+                }, 10000);
             },
             // onPress: () => {
             //   setLoading(true);

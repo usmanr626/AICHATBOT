@@ -16,6 +16,7 @@ import {
   TestIds,
   AdEventType,
 } from 'react-native-google-mobile-ads';
+import {requestTrackingPermission} from 'react-native-tracking-transparency';
 
 import remoteConfig from '@react-native-firebase/remote-config';
 
@@ -90,9 +91,14 @@ const App = () => {
     checkMicPermission();
   }, []);
 
+  const askPermission = async () => {
+    const trackingStatus = await requestTrackingPermission();
+  };
+
   useEffect(() => {
-    // showOpenAppAdd();
+    askPermission();
   }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator

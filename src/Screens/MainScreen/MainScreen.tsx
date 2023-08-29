@@ -50,17 +50,31 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
   const [screenLoading, setScreenLoading] = useState(false);
 
   remoteConfig().setDefaults({
-    ads_enabled: true, // Default value for ads
+    ads_enabled_ios: true, // Default value for ads on iOS
+    ads_enabled: true, // Default value for ads on Android
   });
 
   const fetchRemoteConfig = async () => {
     try {
       await remoteConfig().fetchAndActivate(); // Fetch and activate the config
-      const adsEnabled = remoteConfig().getValue('ads_enabled').asBoolean();
-      return adsEnabled;
+
+      const adsEnabled = remoteConfig()
+        .getValue('ads_enabled_android')
+        .asBoolean();
+      const adsEnablediOS = remoteConfig()
+        .getValue('ads_enabled_ios')
+        .asBoolean();
+
+      return {
+        adsEnabled,
+        adsEnablediOS,
+      };
     } catch (error) {
       console.error('Error fetching remote config:', error);
-      return false; // Default to false if there's an error
+      return {
+        adsEnabled: false, // Default to false on Android if there's an error
+        adsEnablediOS: false, // Default to false on iOS if there's an error
+      };
     }
   };
 
@@ -105,10 +119,20 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
 
   const onContinuePress = async () => {
     setScreenLoading(true);
-    const adsEnabled = await fetchRemoteConfig();
+    const {adsEnabled, adsEnablediOS} = await fetchRemoteConfig();
+    console.log('REMOTE CONFIG android', adsEnabled);
+    console.log('REMOTE CONFIG ios', adsEnablediOS);
 
-    if (adsEnabled) {
-      // Show ads
+    if (Platform.OS === 'ios' && adsEnablediOS) {
+      // Show ads only on iOS with adsEnablediOS true
+      try {
+        interstitial.show();
+      } catch (error) {
+        console.log('Error', error);
+        navigation.navigate('ChatScreen');
+      }
+    } else if (Platform.OS === 'android' && adsEnabled) {
+      // Show ads only on Android with adsEnabledAndroid true
       try {
         interstitial.show();
       } catch (error) {
@@ -116,9 +140,8 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
         navigation.navigate('ChatScreen');
       }
     } else {
-      // Don't show adsnavigation.navigate('ChatScreen');
+      // Don't show ads or show on Android
       navigation.navigate('ChatScreen');
-      // Alert.alert('NO ADS');
     }
   };
   return (
