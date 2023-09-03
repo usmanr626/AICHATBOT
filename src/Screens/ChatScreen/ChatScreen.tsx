@@ -52,7 +52,8 @@ type ChatMessage = {
 
 const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const flatListRef = useRef(null);
-
+  //
+  const isAndroid = Platform.OS === 'android';
   const [text, setText] = useState('');
   const [showSideModal, setShowSideModal] = useState(false);
   const [suggestionModal, setSuggestionModal] = useState(false);
@@ -61,6 +62,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const apiKey = CONSTANTS.API_KEY;
 
   const [result, setResult] = useState<any>('');
+  console.log('🚀 ~ file: ChatScreen.tsx:64 ~ ChatScreen ~ result:', result);
   const [error, setError] = useState<any>('');
   const [isRecording, setIsRecording] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
@@ -76,9 +78,9 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [lowerFlatListData, setLowerFlatListData] = useState([]);
   const [selectedChatSession, setSelectedChatSession] = useState(null);
 
-  remoteConfig().setDefaults({
-    ads_enabled: true, // Default value for ads
-  });
+  // remoteConfig().setDefaults({
+  //   ads_enabled: true, // Default value for ads
+  // });
 
   // PERMISSIONS
 
@@ -236,9 +238,14 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   }, []);
 
   Voice.onSpeechStart = () => setIsRecording(true);
-  Voice.onSpeechEnd = () => setIsRecording(false);
+  // Voice.onSpeechEnd = () => stopRecording();
   Voice.onSpeechError = error => setError(error?.error);
-  Voice.onSpeechResults = result => setResult(result.value[0]);
+  // Voice.onSpeechResults = result => setResult(result.value[0]);
+  Voice.onSpeechResults = event => {
+    console.log('Voice.onSpeechResults:', event);
+    const recognized = event?.value[0];
+    setResult(recognized);
+  };
 
   const requestAudioRecordingPermission = async () => {
     try {
@@ -305,6 +312,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const startNewChat = async () => {
     setChatHistory([]);
     setText('');
+    setResult('');
     // Reset the unsavedChanges flag as the chat session has been saved
     setUnsavedChanges(false);
     setShowSideModal(false);
@@ -339,6 +347,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     // Clear the chat history state and reset the text input
     setChatHistory([]);
     setText('');
+    setResult('');
     setShowSideModal(false);
   };
 
@@ -400,14 +409,23 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     setIsRecording(true);
     console.log('Start');
     setText('');
+    setResult('');
     try {
       await Voice.start('en_US', {
         RECOGNIZER_ENGINE: 'GOOGLE',
         EXTRA_PARTIAL_RESULTS: true,
       });
       Voice.onSpeechPartialResults = partialResults => {
+        console.log(
+          '🚀 ~ file: ChatScreen.tsx:414 ~ startRecording ~ partialResults:',
+          partialResults,
+        );
         if (partialResults.value && partialResults.value.length > 0) {
           setResult(partialResults.value[0]); // Update the result with the partial speech
+          console.log(
+            '🚀 ~ file: ChatScreen.tsx:421 ~ startRecording ~ partialResults.value[0]:',
+            partialResults.value[0],
+          );
         }
       };
     } catch (error) {
@@ -424,6 +442,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       Voice.removeAllListeners(); // Remove the listener for partial results
       await Voice.stop();
       setText(result);
+      setResult(result);
       console.log('RESULT RECORDING: ', result);
     } catch (error) {
       setError(error);
@@ -457,8 +476,11 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   // };
 
   const handleSend = async () => {
+    console.log('Sednign', text);
+    console.log('Sednign', result);
+
     // Check if the message is empty
-    if (text.trim() === '') {
+    if (isAndroid ? result.trim() === '' : result.trim() === '') {
       return; // Do nothing if the message is empty
     }
     if (questionsAsked >= 4) {
@@ -512,7 +534,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       role: 'system',
       content: 'You are chatting with the AI.',
     };
-    const userMessage = {role: 'user', content: text};
+    const userMessage = {role: 'user', content: result};
 
     const messages = [...chatHistory, systemMessage, userMessage].map(
       message => ({
@@ -556,14 +578,14 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         };
 
         // Update the user and bot messages with correct content
-        userMessage.content = text;
+        userMessage.content = result;
         botMessage.content = data.choices[0].message.content;
 
         // Update chat history with user and bot messages
         const updatedChatHistory = [...chatHistory, userMessage, botMessage];
         setChatHistory(updatedChatHistory);
         setText('');
-
+        setResult('');
         // Save the chat session after sending the message
         await saveChatSession(userMessage.content);
 
@@ -605,7 +627,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   };
 
   const onChangeText = (inputText: string) => {
-    setText(inputText);
+    setResult(inputText);
     setUnsavedChanges(true);
   };
 
@@ -752,10 +774,9 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           style={styles.separator}
           placeholder="Write your message..."
           placeholderTextColor={'white'}
-          value={text}
+          value={result}
           onChangeText={onChangeText}
         />
-
         <TouchableOpacity
           style={styles.sendButtonContainer}
           // onPress={() => showAdd()}
@@ -958,7 +979,9 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => {
-                  setText(item.message), setSuggestionModal(!suggestionModal);
+                  setText(item.message),
+                    setResult(item.message),
+                    setSuggestionModal(!suggestionModal);
                 }}
                 style={{
                   backgroundColor: 'grey',

@@ -50,8 +50,8 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
   const [screenLoading, setScreenLoading] = useState(false);
 
   remoteConfig().setDefaults({
-    ads_enabled_ios: true, // Default value for ads on iOS
-    ads_enabled: true, // Default value for ads on Android
+    ads_enabled_ios: false, // Default value for ads on iOS
+    ads_enabled: false, // Default value for ads on Android
   });
 
   const fetchRemoteConfig = async () => {

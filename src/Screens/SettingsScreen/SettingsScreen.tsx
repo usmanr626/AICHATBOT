@@ -110,7 +110,7 @@ const SettingsScreen = ({navigation}: SettingsScreenPropTypes) => {
           <CallToAction
             onPress={() => onMoreApps()}
             icon={IMAGES.moreApps}
-            title={'More App'}
+            title={'More Apps'}
           />
         ) : null}
         <CallToAction
