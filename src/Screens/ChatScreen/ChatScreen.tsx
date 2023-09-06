@@ -77,6 +77,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [lowerFlatListData, setLowerFlatListData] = useState([]);
   const [selectedChatSession, setSelectedChatSession] = useState(null);
+  const [saveSession, setSaveSession] = useState(false);
+  const [chatSessionName, setChatSessionName] = useState([]);
 
   // remoteConfig().setDefaults({
   //   ads_enabled: true, // Default value for ads
@@ -136,7 +138,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   useEffect(() => {
     loadSavedChatSessions(); // Load chat sessions when component mounts
-  }, []);
+  }, [questionsAsked]);
 
   const suggestionsCategoryData = [
     {message: 'Interview'},
@@ -285,42 +287,31 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     }
   };
 
-  const saveThisChat = async () => {
-    if (!chatHistory) {
-      return; // Return early if chatHistory is not defined
-    }
-
-    const lastUserMessage = chatHistory
-      .filter(message => message.role === 'user')
-      .pop(); // Get the last user message
-
-    const chatSessionName = lastUserMessage
-      ? lastUserMessage.content
-      : 'Your Chat'; // Use the last user message as the session name, or 'Your Chat' if not available
-
-    // Save the current chat history to AsyncStorage with the chatSessionName
-    await saveChatSession(chatSessionName);
-
-    // Load the updated chat sessions after saving the new chat session
-    await loadSavedChatSessions();
-
-    // Save the current chat history to previousChatHistory in AsyncStorage
-    AsyncStorage.setItem('previousChatHistory', JSON.stringify(chatHistory));
-    setUnsavedChanges(false);
-    setShowSideModal(false);
-  };
   const startNewChat = async () => {
+    console.log('index 0 ', chatSessionName[0]);
+    console.log('index 1 ', chatSessionName[1]);
+    console.log('index 2 ', chatSessionName[2]);
+    console.log('index 3 ', chatSessionName[3]);
+    console.log('index 4 ', chatSessionName[4]);
+    console.log('index 5 ', chatSessionName[5]);
+    console.log('index 6 ', chatSessionName[6]);
+
     setChatHistory([]);
     setText('');
     setResult('');
-    // Reset the unsavedChanges flag as the chat session has been saved
     setUnsavedChanges(false);
     setShowSideModal(false);
 
     // Generate a timestamp to use as the chat session name
     const timestamp = new Date().toISOString();
 
-    await saveChatSession(timestamp);
+    // await saveChatSession(chatSessionName[1]);
+    if (chatSessionName.length > 0) {
+      await saveChatSession(chatSessionName[0]);
+    }
+    loadSavedChatSessions();
+
+    setChatSessionName([]);
   };
 
   const cleanHistory = async () => {
@@ -352,6 +343,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   };
 
   const saveChatSession = async (chatSessionName: string | undefined) => {
+    console.log('SAVING CHAT SESSION NAME:', chatSessionName);
+
     try {
       // Create a new chat session object
       const newChatSession = {
@@ -379,6 +372,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   const loadChatSession = chatSession => {
     // Set the chat history to the selected chat session's history
+
     setChatHistory(chatSession.history);
 
     // Set the selected chat session
@@ -390,20 +384,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     // Reset the unsavedChanges flag as the chat session has been loaded
     setUnsavedChanges(false);
   };
-
-  // console.log('RESULTT: ', result);
-
-  // const startRecording = async () => {
-  //   setIsRecording(true);
-  //   console.log('Start');
-  //   setText('');
-  //   try {
-  //     await Voice.start('en');
-  //   } catch (error) {
-  //     setError(error);
-  //     console.log('ERROR');
-  //   }
-  // };
 
   const startRecording = async () => {
     setIsRecording(true);
@@ -488,7 +468,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (isAndroid ? result.trim() === '' : result.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked >= 4) {
+    if (questionsAsked >= 4222) {
       Alert.alert(
         'Limit reached',
         'you can extend your limit by watching an ad',
@@ -550,8 +530,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     console.log('Formatted Messages:', messages); // Log the formatted messages
 
     try {
-      const startTime = new Date();
-
       setIsSending(true); // Show the activity indicator
       const response = await fetch(
         'https://api.openai.com/v1/chat/completions',
@@ -567,9 +545,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           }),
         },
       );
-      const endTime = new Date();
-      const responseTime = endTime - startTime; // in milliseconds
-      console.log(`API response time: ${responseTime}ms`);
+
       const data = await response.json();
       console.log('API Response:', data);
 
@@ -592,12 +568,23 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         setText('');
         setResult('');
         // Save the chat session after sending the message
-        await saveChatSession(userMessage.content);
+        //dont save chat session here
+        // await saveChatSession(userMessage.content);
+        //dont save chat session here
+        console.log('USER MESSAGE ', userMessage);
+        console.log('USER MESSAGE CONTENT', userMessage.content);
 
-        setChatSessions(prevChatSessions => [
-          ...prevChatSessions,
-          {id: userMessage.content, history: updatedChatHistory},
-        ]);
+        setChatSessionName([...chatSessionName, userMessage.content]);
+
+        console.log('THIS ARRAY now: ', chatSessionName);
+
+        // {
+        //   saveSession &&
+        //     setChatSessions(prevChatSessions => [
+        //       ...prevChatSessions,
+        //       {id: userMessage.content, history: updatedChatHistory},
+        //     ]);
+        // }
 
         // ...
       } else {
