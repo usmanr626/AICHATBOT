@@ -54,42 +54,42 @@ const App = () => {
 
     appOpenAd.load();
   };
-  useEffect(() => {
-    const requestCameraPermission = async () => {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-          {
-            title: 'Mic Permission',
-            message: 'Mic Permission.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('You can use the Mic');
-        } else {
-          console.log('Mic permission denied');
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    };
+  // useEffect(() => {
+  //   const requestCameraPermission = async () => {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+  //         {
+  //           title: 'Mic Permission',
+  //           message: 'Mic Permission.',
+  //           buttonNeutral: 'Ask Me Later',
+  //           buttonNegative: 'Cancel',
+  //           buttonPositive: 'OK',
+  //         },
+  //       );
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         console.log('You can use the Mic');
+  //       } else {
+  //         console.log('Mic permission denied');
+  //       }
+  //     } catch (err) {
+  //       console.warn(err);
+  //     }
+  //   };
 
-    requestCameraPermission();
-  }, []);
+  //   requestCameraPermission();
+  // }, []);
 
-  useEffect(() => {
-    const checkMicPermission = async () => {
-      const hasPermission = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      );
-      console.log('Microphone permission status:', hasPermission);
-    };
+  // useEffect(() => {
+  //   const checkMicPermission = async () => {
+  //     const hasPermission = await PermissionsAndroid.check(
+  //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+  //     );
+  //     console.log('Microphone permission status:', hasPermission);
+  //   };
 
-    checkMicPermission();
-  }, []);
+  //   checkMicPermission();
+  // }, []);
 
   const askPermission = async () => {
     const trackingStatus = await requestTrackingPermission();

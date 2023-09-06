@@ -84,31 +84,31 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   // PERMISSIONS
 
-  useEffect(() => {
-    const requestCameraPermission = async () => {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-          {
-            title: 'Mic Permission',
-            message: 'Mic Permission.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('You can use the Mic');
-        } else {
-          console.log('Mic permission denied');
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    };
+  // useEffect(() => {
+  //   const requestCameraPermission = async () => {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+  //         {
+  //           title: 'Mic Permission',
+  //           message: 'Mic Permission.',
+  //           buttonNeutral: 'Ask Me Later',
+  //           buttonNegative: 'Cancel',
+  //           buttonPositive: 'OK',
+  //         },
+  //       );
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         console.log('You can use the Mic');
+  //       } else {
+  //         console.log('Mic permission denied');
+  //       }
+  //     } catch (err) {
+  //       console.warn(err);
+  //     }
+  //   };
 
-    requestCameraPermission();
-  }, []);
+  //   requestCameraPermission();
+  // }, []);
 
   useEffect(() => {
     const checkMicPermission = async () => {
@@ -118,7 +118,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       console.log('Microphone permission status:', hasPermission);
     };
 
-    checkMicPermission();
+    // checkMicPermission();
   }, []);
 
   useEffect(() => {
@@ -431,7 +431,11 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     } catch (error) {
       setError(error);
       console.log('ERROR');
+    } finally {
+      setIsRecording(false);
     }
+
+    // stopRecording();
   };
 
   const stopRecording = async () => {
@@ -476,6 +480,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   // };
 
   const handleSend = async () => {
+    setIsRecording(false);
     console.log('Sednign', text);
     console.log('Sednign', result);
 
