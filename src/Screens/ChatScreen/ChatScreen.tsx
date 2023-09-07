@@ -253,34 +253,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     }
   };
 
-  const cleanHistory = async () => {
-    try {
-      // Clear the chat history in AsyncStorage
-      await AsyncStorage.removeItem('chatHistory');
-      console.log('Chat history cleared.');
-
-      // Clear the previous chat history in AsyncStorage
-      await AsyncStorage.removeItem('previousChatHistory');
-      console.log('Previous chat history cleared.');
-
-      // Clear all chat sessions in AsyncStorage
-      await AsyncStorage.removeItem('chatSessions');
-      console.log('All chat sessions cleared.');
-
-      // Clear the chat sessions state
-      setChatSessions([]);
-      Alert.alert('History Cleaned');
-    } catch (error) {
-      console.error('Error clearing chat data:', error);
-    }
-
-    // Clear the chat history state and reset the text input
-    setChatHistory([]);
-    setText('');
-    setResult('');
-    setShowSideModal(false);
-  };
-
   const saveChatSession = async (chatSessionName: string | undefined) => {
     console.log('SAVING CHAT SESSION NAME:', chatSessionName);
 
@@ -542,6 +514,34 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     }
 
     // stopRecording();
+  };
+
+  const cleanHistory = async () => {
+    try {
+      // Clear the chat history in AsyncStorage
+      await AsyncStorage.removeItem('chatHistory');
+      console.log('Chat history cleared.');
+
+      // Clear the previous chat history in AsyncStorage
+      await AsyncStorage.removeItem('previousChatHistory');
+      console.log('Previous chat history cleared.');
+
+      // Clear all chat sessions in AsyncStorage
+      await AsyncStorage.removeItem('chatSessions');
+      console.log('All chat sessions cleared.');
+
+      // Clear the chat sessions state
+      setChatSessions([]);
+      Alert.alert('History Cleaned');
+    } catch (error) {
+      console.error('Error clearing chat data:', error);
+    }
+
+    // Clear the chat history state and reset the text input
+    setChatHistory([]);
+    setText('');
+    setResult('');
+    setShowSideModal(false);
   };
 
   const onChangeText = (inputText: string) => {
