@@ -80,38 +80,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [saveSession, setSaveSession] = useState(false);
   const [chatSessionName, setChatSessionName] = useState([]);
 
-  // remoteConfig().setDefaults({
-  //   ads_enabled: true, // Default value for ads
-  // });
-
-  // PERMISSIONS
-
-  // useEffect(() => {
-  //   const requestCameraPermission = async () => {
-  //     try {
-  //       const granted = await PermissionsAndroid.request(
-  //         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  //         {
-  //           title: 'Mic Permission',
-  //           message: 'Mic Permission.',
-  //           buttonNeutral: 'Ask Me Later',
-  //           buttonNegative: 'Cancel',
-  //           buttonPositive: 'OK',
-  //         },
-  //       );
-  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //         console.log('You can use the Mic');
-  //       } else {
-  //         console.log('Mic permission denied');
-  //       }
-  //     } catch (err) {
-  //       console.warn(err);
-  //     }
-  //   };
-
-  //   requestCameraPermission();
-  // }, []);
-
   useEffect(() => {
     const checkMicPermission = async () => {
       const hasPermission = await PermissionsAndroid.check(
@@ -266,10 +234,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     }
   };
 
-  useEffect(() => {
-    // requestAudioRecordingPermission();
-  }, []);
-
   const loadSavedChatSessions = async () => {
     try {
       const existingChatSessions = await AsyncStorage.getItem('chatSessions');
@@ -380,80 +344,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     // Reset the unsavedChanges flag as the chat session has been loaded
     setUnsavedChanges(false);
   };
-
-  const startRecording = async () => {
-    setIsRecording(true);
-    console.log('Start');
-    setText('');
-    setResult('');
-    try {
-      await Voice.start('en_US', {
-        RECOGNIZER_ENGINE: 'GOOGLE',
-        EXTRA_PARTIAL_RESULTS: true,
-      });
-      Voice.onSpeechPartialResults = partialResults => {
-        console.log(
-          '🚀 ~ file: ChatScreen.tsx:414 ~ startRecording ~ partialResults:',
-          partialResults,
-        );
-        if (partialResults.value && partialResults.value.length > 0) {
-          setResult(partialResults.value[0]); // Update the result with the partial speech
-          console.log(
-            '🚀 ~ file: ChatScreen.tsx:421 ~ startRecording ~ partialResults.value[0]:',
-            partialResults.value[0],
-          );
-        }
-      };
-    } catch (error) {
-      setError(error);
-      console.log('ERROR');
-    } finally {
-      setIsRecording(false);
-    }
-
-    // stopRecording();
-  };
-
-  const stopRecording = async () => {
-    setIsRecording(false);
-    console.log('Stopping');
-
-    try {
-      Voice.removeAllListeners(); // Remove the listener for partial results
-      await Voice.stop();
-      setText(result);
-      setResult(result);
-      console.log('RESULT RECORDING: ', result);
-    } catch (error) {
-      setError(error);
-      console.log('ERROR');
-    }
-  };
-  // const stopRecording = async () => {
-  //   setIsRecording(false);
-  //   console.log('Stopping');
-
-  //   try {
-  //     await Voice.stop();
-  //     setText(result);
-  //     console.log('REUSLT RECORDING: ', result);
-  //   } catch (error) {
-  //     setError(error);
-  //     console.log('ERROR');
-  //   }
-  // };
-
-  // const showRewardedAd = async () => {
-  //   const adsEnabled = await fetchRemoteConfig();
-
-  //   if (adsEnabled) {
-  //     // Show ads
-  //     rewarded.show();
-  //   } else {
-  //     // Don't show ads
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleSend = async () => {
     setIsRecording(false);
@@ -601,17 +491,57 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     // await saveThisChat();
   };
 
-  // useEffect(() => {
-  //   const saveChatOnUnmount = async () => {
-  //     await saveThisChat();
-  //   };
-  //   return () => {
-  //     saveChatOnUnmount();
-  //   };
-  // }, []);
-
   const getChatSessionName = (chatSession: any) => {
     return chatSession.id || 'Your Chat';
+  };
+
+  const stopRecording = async () => {
+    setIsRecording(false);
+    console.log('Stopping');
+
+    try {
+      Voice.removeAllListeners(); // Remove the listener for partial results
+      await Voice.stop();
+      setText(result);
+      setResult(result);
+      console.log('RESULT RECORDING: ', result);
+    } catch (error) {
+      setError(error);
+      console.log('ERROR');
+    }
+  };
+
+  const startRecording = async () => {
+    setIsRecording(true);
+    console.log('Start');
+    setText('');
+    setResult('');
+    try {
+      await Voice.start('en_US', {
+        RECOGNIZER_ENGINE: 'GOOGLE',
+        EXTRA_PARTIAL_RESULTS: true,
+      });
+      Voice.onSpeechPartialResults = partialResults => {
+        console.log(
+          '🚀 ~ file: ChatScreen.tsx:414 ~ startRecording ~ partialResults:',
+          partialResults,
+        );
+        if (partialResults.value && partialResults.value.length > 0) {
+          setResult(partialResults.value[0]); // Update the result with the partial speech
+          console.log(
+            '🚀 ~ file: ChatScreen.tsx:421 ~ startRecording ~ partialResults.value[0]:',
+            partialResults.value[0],
+          );
+        }
+      };
+    } catch (error) {
+      setError(error);
+      console.log('ERROR');
+    } finally {
+      setIsRecording(false);
+    }
+
+    // stopRecording();
   };
 
   const onChangeText = (inputText: string) => {
