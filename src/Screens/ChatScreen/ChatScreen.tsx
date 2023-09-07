@@ -62,7 +62,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const apiKey = CONSTANTS.API_KEY;
 
   const [result, setResult] = useState<any>('');
-  console.log('🚀 ~ file: ChatScreen.tsx:64 ~ ChatScreen ~ result:', result);
+  // console.log('🚀 ~ file: ChatScreen.tsx:64 ~ ChatScreen ~ result:', result);
   const [error, setError] = useState<any>('');
   const [isRecording, setIsRecording] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
@@ -85,7 +85,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       const hasPermission = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
-      console.log('Microphone permission status:', hasPermission);
+      // console.log('Microphone permission status:', hasPermission);
     };
 
     // checkMicPermission();
@@ -168,7 +168,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     const unsubscribeEarned = rewarded.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
       reward => {
-        console.log('User earned reward of ', reward);
+        // console.log('User earned reward of ', reward);
         setLoading(false);
         setQuestionsAsked(0);
         // setText('');
@@ -212,7 +212,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   Voice.onSpeechError = error => setError(error?.error);
   // Voice.onSpeechResults = result => setResult(result.value[0]);
   Voice.onSpeechResults = event => {
-    console.log('Voice.onSpeechResults:', event);
+    // console.log('Voice.onSpeechResults:', event);
     const recognized = event?.value[0];
     setResult(recognized);
   };
@@ -224,9 +224,9 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('ANDROID PERMISSION GRANTED');
+          // console.log('ANDROID PERMISSION GRANTED');
         } else {
-          console.log('ANDROID PERMISSION NOT GRANTED');
+          // console.log('ANDROID PERMISSION NOT GRANTED');
         }
       }
     } catch (error) {
@@ -246,7 +246,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           setSelectedChatSession(chatSessions[0].id);
         }
 
-        console.log('GOT SESSTIONS:', chatSessions[0].id);
+        // console.log('GOT SESSTIONS:', chatSessions[0].id);
       }
     } catch (error) {
       console.error('Error loading chat sessions:', error);
@@ -254,7 +254,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   };
 
   const saveChatSession = async (chatSessionName: string | undefined) => {
-    console.log('SAVING CHAT SESSION NAME:', chatSessionName);
+    // console.log('SAVING CHAT SESSION NAME:', chatSessionName);
 
     try {
       // Create a new chat session object
@@ -275,7 +275,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       // Save the updated chat sessions array to AsyncStorage
       await AsyncStorage.setItem('chatSessions', JSON.stringify(chatSessions));
 
-      console.log('Chat session saved:', newChatSession);
+      // console.log('Chat session saved:', newChatSession);
     } catch (error) {
       console.error('Error saving chat session:', error);
     }
@@ -297,7 +297,17 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     }
     const here = await loadSavedChatSessions();
 
-    console.log('WELL HERE', here);
+    // console.log('WELL HERE', here);
+
+    setChatSessionName([]);
+  };
+  const saveCurrentChat = async () => {
+    if (chatSessionName.length > 0) {
+      await saveChatSession(chatSessionName[0]);
+    }
+    const here = await loadSavedChatSessions();
+
+    // console.log('WELL HERE', here);
 
     setChatSessionName([]);
   };
@@ -319,8 +329,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   const handleSend = async () => {
     setIsRecording(false);
-    console.log('Sednign', text);
-    console.log('Sednign', result);
+    // console.log('Sednign', text);
+    // console.log('Sednign', result);
 
     // Check if the message is empty
     if (isAndroid ? result.trim() === '' : result.trim() === '') {
@@ -366,7 +376,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           },
           {
             text: 'Cancel',
-            onPress: () => console.log('OK Pressed'),
+            // onPress: () => console.log('OK Pressed'),
             style: 'destructive',
           },
         ],
@@ -385,7 +395,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         content: message.content,
       }),
     );
-    console.log('Formatted Messages:', messages); // Log the formatted messages
+    // console.log('Formatted Messages:', messages); // Log the formatted messages
 
     try {
       setIsSending(true); // Show the activity indicator
@@ -405,7 +415,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       );
 
       const data = await response.json();
-      console.log('API Response:', data);
+      // console.log('API Response:', data);
 
       if (data.choices && data.choices.length > 0) {
         // ...
@@ -429,12 +439,12 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         //dont save chat session here
         // await saveChatSession(userMessage.content);
         //dont save chat session here
-        console.log('USER MESSAGE ', userMessage);
-        console.log('USER MESSAGE CONTENT', userMessage.content);
+        // console.log('USER MESSAGE ', userMessage);
+        // console.log('USER MESSAGE CONTENT', userMessage.content);
 
         setChatSessionName([...chatSessionName, userMessage.content]);
 
-        console.log('THIS ARRAY now: ', chatSessionName);
+        // console.log('THIS ARRAY now: ', chatSessionName);
 
         // {
         //   saveSession &&
@@ -445,6 +455,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         // }
 
         // ...
+
+        saveCurrentChat();
       } else {
         console.error('Invalid API response:', data);
       }
@@ -469,23 +481,23 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   const stopRecording = async () => {
     setIsRecording(false);
-    console.log('Stopping');
+    // console.log('Stopping');
 
     try {
       Voice.removeAllListeners(); // Remove the listener for partial results
       await Voice.stop();
       setText(result);
       setResult(result);
-      console.log('RESULT RECORDING: ', result);
+      // console.log('RESULT RECORDING: ', result);
     } catch (error) {
       setError(error);
-      console.log('ERROR');
+      // console.log('ERROR');
     }
   };
 
   const startRecording = async () => {
     setIsRecording(true);
-    console.log('Start');
+    // console.log('Start');
     setText('');
     setResult('');
     try {
@@ -494,21 +506,21 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         EXTRA_PARTIAL_RESULTS: true,
       });
       Voice.onSpeechPartialResults = partialResults => {
-        console.log(
-          '🚀 ~ file: ChatScreen.tsx:414 ~ startRecording ~ partialResults:',
-          partialResults,
-        );
+        // console.log(
+        //   '🚀 ~ file: ChatScreen.tsx:414 ~ startRecording ~ partialResults:',
+        //   partialResults,
+        // );
         if (partialResults.value && partialResults.value.length > 0) {
           setResult(partialResults.value[0]); // Update the result with the partial speech
-          console.log(
-            '🚀 ~ file: ChatScreen.tsx:421 ~ startRecording ~ partialResults.value[0]:',
-            partialResults.value[0],
-          );
+          // console.log(
+          //   '🚀 ~ file: ChatScreen.tsx:421 ~ startRecording ~ partialResults.value[0]:',
+          //   partialResults.value[0],
+          // );
         }
       };
     } catch (error) {
       setError(error);
-      console.log('ERROR');
+      // console.log('ERROR');
     } finally {
       setIsRecording(false);
     }
@@ -557,7 +569,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     const getServices = async () => {
       if (Platform.OS === 'android') {
         const service = await Voice.getSpeechRecognitionServices();
-        console.log('services received: ', service);
+        // console.log('services received: ', service);
       }
     };
     getServices(); // Call the getServices function inside useEffect to execute it on mount
