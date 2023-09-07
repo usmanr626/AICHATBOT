@@ -254,7 +254,16 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   };
 
   const saveChatSession = async (chatSessionName: string | undefined) => {
-    // console.log('SAVING CHAT SESSION NAME:', chatSessionName);
+    // Retrieve the existing chat sessions from AsyncStorage
+    const existingChatSessions = await AsyncStorage.getItem('chatSessions');
+    const chatSessions = existingChatSessions
+      ? JSON.parse(existingChatSessions)
+      : [];
+
+    // Check if the chat session name already exists
+    const existingSessionIndex = chatSessions.findIndex(
+      session => session.id === chatSessionName,
+    );
 
     try {
       // Create a new chat session object
@@ -263,19 +272,18 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         history: chatHistory,
       };
 
-      // Retrieve the existing chat sessions from AsyncStorage
-      const existingChatSessions = await AsyncStorage.getItem('chatSessions');
-      const chatSessions = existingChatSessions
-        ? JSON.parse(existingChatSessions)
-        : [];
-
-      // Add the new chat session to the array of chat sessions
-      chatSessions.push(newChatSession);
+      if (existingSessionIndex !== -1) {
+        // Update the existing chat session's history
+        chatSessions[existingSessionIndex].history = chatHistory;
+      } else {
+        // Add the new chat session to the array of chat sessions
+        chatSessions.push(newChatSession);
+      }
 
       // Save the updated chat sessions array to AsyncStorage
       await AsyncStorage.setItem('chatSessions', JSON.stringify(chatSessions));
 
-      // console.log('Chat session saved:', newChatSession);
+      console.log('Chat session saved:', chatSessionName);
     } catch (error) {
       console.error('Error saving chat session:', error);
     }
@@ -292,16 +300,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     // const timestamp = new Date().toISOString();
 
     // await saveChatSession(chatSessionName[1]);
-    if (chatSessionName.length > 0) {
-      await saveChatSession(chatSessionName[0]);
-    }
-    const here = await loadSavedChatSessions();
-
-    // console.log('WELL HERE', here);
-
-    setChatSessionName([]);
-  };
-  const saveCurrentChat = async () => {
     if (chatSessionName.length > 0) {
       await saveChatSession(chatSessionName[0]);
     }
@@ -435,28 +433,21 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         setChatHistory(updatedChatHistory);
         setText('');
         setResult('');
-        // Save the chat session after sending the message
-        //dont save chat session here
-        // await saveChatSession(userMessage.content);
-        //dont save chat session here
-        // console.log('USER MESSAGE ', userMessage);
-        // console.log('USER MESSAGE CONTENT', userMessage.content);
 
         setChatSessionName([...chatSessionName, userMessage.content]);
 
-        // console.log('THIS ARRAY now: ', chatSessionName);
+        console.log(
+          'SAVIGN CURRENT CHAT',
+          chatHistory[0] ? chatHistory[0].content : result,
+        );
 
-        // {
-        //   saveSession &&
-        //     setChatSessions(prevChatSessions => [
-        //       ...prevChatSessions,
-        //       {id: userMessage.content, history: updatedChatHistory},
-        //     ]);
-        // }
+        // await saveChatSession(chatSessionName[0]);
+        await saveChatSession(chatHistory[0] ? chatHistory[0].content : result);
+        // await saveChatSession('chatSessionName[0]');
 
-        // ...
+        const here = await loadSavedChatSessions();
 
-        saveCurrentChat();
+        setChatSessionName([]);
       } else {
         console.error('Invalid API response:', data);
       }
