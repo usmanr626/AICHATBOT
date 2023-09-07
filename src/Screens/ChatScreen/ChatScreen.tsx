@@ -281,37 +281,12 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         if (chatSessions.length > 0) {
           setSelectedChatSession(chatSessions[0].id);
         }
+
+        console.log('GOT SESSTIONS:', chatSessions[0].id);
       }
     } catch (error) {
       console.error('Error loading chat sessions:', error);
     }
-  };
-
-  const startNewChat = async () => {
-    console.log('index 0 ', chatSessionName[0]);
-    console.log('index 1 ', chatSessionName[1]);
-    console.log('index 2 ', chatSessionName[2]);
-    console.log('index 3 ', chatSessionName[3]);
-    console.log('index 4 ', chatSessionName[4]);
-    console.log('index 5 ', chatSessionName[5]);
-    console.log('index 6 ', chatSessionName[6]);
-
-    setChatHistory([]);
-    setText('');
-    setResult('');
-    setUnsavedChanges(false);
-    setShowSideModal(false);
-
-    // Generate a timestamp to use as the chat session name
-    const timestamp = new Date().toISOString();
-
-    // await saveChatSession(chatSessionName[1]);
-    if (chatSessionName.length > 0) {
-      await saveChatSession(chatSessionName[0]);
-    }
-    loadSavedChatSessions();
-
-    setChatSessionName([]);
   };
 
   const cleanHistory = async () => {
@@ -368,6 +343,27 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     } catch (error) {
       console.error('Error saving chat session:', error);
     }
+  };
+
+  const startNewChat = async () => {
+    setChatHistory([]);
+    setText('');
+    setResult('');
+    setUnsavedChanges(false);
+    setShowSideModal(false);
+
+    // Generate a timestamp to use as the chat session name
+    // const timestamp = new Date().toISOString();
+
+    // await saveChatSession(chatSessionName[1]);
+    if (chatSessionName.length > 0) {
+      await saveChatSession(chatSessionName[0]);
+    }
+    const here = await loadSavedChatSessions();
+
+    console.log('WELL HERE', here);
+
+    setChatSessionName([]);
   };
 
   const loadChatSession = chatSession => {
