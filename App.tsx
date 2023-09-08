@@ -17,6 +17,7 @@ import {
   AdEventType,
 } from 'react-native-google-mobile-ads';
 import {requestTrackingPermission} from 'react-native-tracking-transparency';
+import {firebase} from '@react-native-firebase/analytics';
 
 import remoteConfig from '@react-native-firebase/remote-config';
 
@@ -97,6 +98,13 @@ const App = () => {
 
   useEffect(() => {
     askPermission();
+    try {
+      firebase.analytics();
+      firebase.analytics().logEvent('app_start', {});
+      console.log('FIREBASE ANALYTICS CONFIGURED');
+    } catch (error) {
+      console.log('FIREBASE ANALYTICS CONFIGURATION ERROR');
+    }
   }, []);
 
   return (
