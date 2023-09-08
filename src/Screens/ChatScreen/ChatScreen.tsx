@@ -30,6 +30,10 @@ import {IMAGES} from '../../Assets/Images';
 import {LABELS} from '../../Assets/Labels';
 import {ChatScreenHeader} from '../../Components/ChatScreenHeader';
 import styles from './styles';
+import {
+  suggestionsCategoryData,
+  lowerFlatListDataMap,
+} from '../../Data/Suggestions';
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
@@ -107,56 +111,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   useEffect(() => {
     loadSavedChatSessions(); // Load chat sessions when component mounts
   }, [questionsAsked]);
-
-  const suggestionsCategoryData = [
-    {message: 'Interview'},
-    {message: 'BusinessAssistant'},
-    {message: 'Developer'},
-    {message: 'Advertiser'},
-    // Add more categories as needed
-  ];
-
-  const lowerFlatListDataMap = {
-    Interview: [
-      {message: 'What are the most common interview questions'},
-      {message: 'How do I prepare for an interview?'},
-      {message: 'What are the best interview questions to ask candidates?'},
-      {message: 'How do I conduct a successful job interview'},
-      {message: `How do I evaluate a candidate's skills and qualifications`},
-      {message: 'How do I determine the cultural fit of a candidate?'},
-    ],
-    BusinessAssistant: [
-      {message: 'What are the responsibilities of a business assistant?'},
-      {message: 'How do I become a successful business assistant?'},
-      {message: 'What skills are required for a business assistant?'},
-      {message: 'What are the best tools and software for business assistant?'},
-      {message: 'What is the role of a virtual business assistant?'},
-      {
-        message:
-          'How do I improve my organizatinal skills as a business assistant?',
-      },
-    ],
-    Developer: [
-      {message: 'What programming language should I learn?'},
-      {message: 'What is Agile development and how does it work?'},
-      {
-        message:
-          'What are the best resources for learning software development',
-      },
-      {message: 'What are the most in-demand programming skills?'},
-      {message: 'How do I get started as a developer?'},
-      {message: 'What is DevOps and how does it relate to development?'},
-    ],
-    Advertiser: [
-      {message: 'What is advertising and how does it work?'},
-      {message: 'What are the different types of advertising?'},
-      {message: 'How do I create a successful advertising campaign'},
-      {message: 'What are the most effective channels for advertising'},
-      {message: 'How do I measure the success of an advertising campaign'},
-      {message: 'What are the best tools and softwares for advertising?'},
-    ],
-    // Add more data for each category as needed
-  };
 
   useEffect(() => {
     const unsubscribeLoaded = rewarded.addAdEventListener(
