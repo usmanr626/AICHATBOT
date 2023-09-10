@@ -235,9 +235,16 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       }
 
       // Save the updated chat sessions array to AsyncStorage
-      await AsyncStorage.setItem('chatSessions', JSON.stringify(chatSessions));
 
-      console.log('Chat session saved:', chatSessionName);
+      try {
+        await AsyncStorage.setItem(
+          'chatSessions',
+          JSON.stringify(chatSessions),
+        );
+        console.log('Chat session saved sucessfully:', chatSessionName);
+      } catch (error) {
+        console.log('Error saving chat to async', error);
+      }
     } catch (error) {
       console.error('Error saving chat session:', error);
     }
@@ -266,6 +273,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   const loadChatSession = chatSession => {
     // Set the chat history to the selected chat session's history
+
+    console.log('loading chat session: ', chatSession);
 
     setChatHistory(chatSession.history);
 
