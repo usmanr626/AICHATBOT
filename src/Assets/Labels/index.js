@@ -6,6 +6,6 @@ export const LABELS = {
   cleanHistory: `Clean history`,
   newChat: `+ New Chat`,
   AiChatbot: `AI Chatbot`,
-  Version: `version 1.0.0`,
+  Version: `version 1.0.1`,
   adLoading: `Ad is loading...`,
 };

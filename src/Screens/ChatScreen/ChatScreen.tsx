@@ -297,7 +297,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (isAndroid ? result.trim() === '' : result.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked >= 4222) {
+    if (questionsAsked >= 4) {
       Alert.alert(
         'Limit reached',
         'you can extend your limit by watching an ad',
