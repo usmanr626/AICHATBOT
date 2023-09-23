@@ -1,99 +1,30 @@
-import 'react-native-gesture-handler';
-import React, {useEffect} from 'react';
-import {View, Text, PermissionsAndroid} from 'react-native';
-import {MainScreen} from './src/Screens/MainScreen';
-import {SettingsScreen} from './src/Screens/SettingsScreen';
-import ChatScreen from './src/Screens/ChatScreen/ChatScreen';
+import {firebase} from '@react-native-firebase/analytics';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect} from 'react';
+import 'react-native-gesture-handler';
 import {
-  AppOpenAd,
-  InterstitialAd,
-  RewardedAdEventType,
-  BannerAdSize,
-  RewardedAd,
-  BannerAd,
-  TestIds,
   AdEventType,
+  AppOpenAd,
+  MobileAds,
+  TestIds,
 } from 'react-native-google-mobile-ads';
 import {requestTrackingPermission} from 'react-native-tracking-transparency';
-import {firebase} from '@react-native-firebase/analytics';
+import ChatScreen from './src/Screens/ChatScreen/ChatScreen';
+import {MainScreen} from './src/Screens/MainScreen';
+import {SettingsScreen} from './src/Screens/SettingsScreen';
 
 import remoteConfig from '@react-native-firebase/remote-config';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const fetchRemoteConfig = async () => {
-    try {
-      await remoteConfig().fetchAndActivate(); // Fetch and activate the config
-      const adsEnabled = remoteConfig().getValue('ads_enabled').asBoolean();
-      return adsEnabled;
-    } catch (error) {
-      console.error('Error fetching remote config:', error);
-      return false; // Default to false if there's an error
-    }
-  };
-
-  remoteConfig().setDefaults({
-    ads_enabled: true, // Default value for ads
-  });
-  const adUnitIdA = TestIds.APP_OPEN;
-
-  const showOpenAppAdd = () => {
-    const appOpenAd = AppOpenAd.createForAdRequest(adUnitIdA, {
-      requestNonPersonalizedAdsOnly: true,
-      keywords: ['fashion', 'clothing'],
-    });
-
-    const unsubscribeLoaded = appOpenAd.addAdEventListener(
-      AdEventType.LOADED,
-      () => {
-        appOpenAd.show();
-      },
-    );
-
-    appOpenAd.load();
-  };
-  // useEffect(() => {
-  //   const requestCameraPermission = async () => {
-  //     try {
-  //       const granted = await PermissionsAndroid.request(
-  //         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  //         {
-  //           title: 'Mic Permission',
-  //           message: 'Mic Permission.',
-  //           buttonNeutral: 'Ask Me Later',
-  //           buttonNegative: 'Cancel',
-  //           buttonPositive: 'OK',
-  //         },
-  //       );
-  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //         console.log('You can use the Mic');
-  //       } else {
-  //         console.log('Mic permission denied');
-  //       }
-  //     } catch (err) {
-  //       console.warn(err);
-  //     }
-  //   };
-
-  //   requestCameraPermission();
-  // }, []);
-
-  // useEffect(() => {
-  //   const checkMicPermission = async () => {
-  //     const hasPermission = await PermissionsAndroid.check(
-  //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  //     );
-  //     console.log('Microphone permission status:', hasPermission);
-  //   };
-
-  //   checkMicPermission();
-  // }, []);
+  // remoteConfig().setDefaults({
+  //   ads_enabled: true, // Default value for ads
+  // });
 
   const askPermission = async () => {
-    const trackingStatus = await requestTrackingPermission();
+    await requestTrackingPermission();
   };
 
   useEffect(() => {
@@ -101,11 +32,56 @@ const App = () => {
     try {
       firebase.analytics();
       firebase.analytics().logEvent('app_start', {});
-      console.log('FIREBASE ANALYTICS CONFIGURED');
+      // console.log('FIREBASE ANALYTICS CONFIGURED');
     } catch (error) {
-      console.log('FIREBASE ANALYTICS CONFIGURATION ERROR');
+      // console.log('FIREBASE ANALYTICS CONFIGURATION ERROR');
     }
+
+    try {
+      MobileAds()
+        .initialize()
+        .then(adapterStatuses => {
+          // console.log('GOOGLE ADS INIT');
+        });
+    } catch (error) {
+      // console.log('GOOGLE ADS INIT ERROR');
+    }
+
+    const adsInspector = async () => {
+      try {
+        await MobileAds().openAdInspector();
+        // The promise will resolve when the inspector is closed.
+        console.log('AD INSPECTOR OPEN');
+      } catch (error) {
+        // The promise will reject if ad inspector is closed due to an error.
+        console.log('AD INSPECTOR ERROR', error);
+        // console.log(error);
+      }
+    };
+
+    // adsInspector();
   }, []);
+
+  // useEffect(() => {
+  //   // Initialize Firebase Remote Config (You might have already done this)
+  //   async function initializeRemoteConfig() {
+  //     try {
+  //       // Configure Remote Config settings
+  //       await remoteConfig().setConfigSettings({
+  //         minimumFetchIntervalMillis: 0, // Set to 0 for no caching during development
+  //         // Other Remote Config settings
+  //       });
+
+  //       // Fetch and activate the latest remote config values
+  //       await remoteConfig().fetchAndActivate();
+  //     } catch (error) {
+  //       console.error('Error initializing Firebase Remote Config:', error);
+  //     }
+  //   }
+
+  //   // Call the initialization function
+  //   initializeRemoteConfig();
+  // }, []); // This useEffect runs once when the component mounts
 
   return (
     <NavigationContainer>

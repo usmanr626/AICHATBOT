@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import remoteConfig from '@react-native-firebase/remote-config';
 import Voice from '@react-native-voice/voice';
 import React, {useEffect, useRef, useState} from 'react';
 import {
@@ -29,11 +28,11 @@ import {CONSTANTS} from '../../Assets/Constants';
 import {IMAGES} from '../../Assets/Images';
 import {LABELS} from '../../Assets/Labels';
 import {ChatScreenHeader} from '../../Components/ChatScreenHeader';
-import styles from './styles';
 import {
-  suggestionsCategoryData,
   lowerFlatListDataMap,
+  suggestionsCategoryData,
 } from '../../Data/Suggestions';
+import styles from './styles';
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
@@ -125,6 +124,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         // console.log('User earned reward of ', reward);
         setLoading(false);
         setQuestionsAsked(0);
+
         // setText('');
         Alert.alert(
           'Thank you for watching the ad',

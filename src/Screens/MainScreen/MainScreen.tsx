@@ -1,44 +1,35 @@
-import React, {useState, useEffect} from 'react';
+import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
 import {
-  View,
-  Text,
-  Image,
-  SafeAreaView,
   ActivityIndicator,
+  Image,
   Platform,
-  Alert,
+  SafeAreaView,
+  Text,
+  View,
 } from 'react-native';
 import {IMAGES} from '../../Assets/Images';
+import {LABELS} from '../../Assets/Labels';
 import {CustomTextButton} from '../../Components/CustomTextButton';
 import styles from './styles';
-import {LABELS} from '../../Assets/Labels';
-import {useIsFocused} from '@react-navigation/native';
 
 import {
-  InterstitialAd,
   AdEventType,
+  InterstitialAd,
   TestIds,
 } from 'react-native-google-mobile-ads';
 
 import remoteConfig from '@react-native-firebase/remote-config';
 
-// const adUnitId = TestIds.INTERSTITIAL;
+const adUnitId = TestIds.INTERSTITIAL;
 
-const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : Platform.OS === 'android'
-  ? `ca-app-pub-4161728863134324/2377302896`
-  : 'ca-app-pub-4161728863134324/3758972213';
-
-// const adUnitId =
-// Platform.OS === 'android'
+// const adUnitId = __DEV__
+//   ? TestIds.INTERSTITIAL
+//   : Platform.OS === 'android'
 //   ? `ca-app-pub-4161728863134324/2377302896`
 //   : 'ca-app-pub-4161728863134324/3758972213';
 
-const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
-  requestNonPersonalizedAdsOnly: true,
-  // keywords: ['fashion', 'clothing'],
-});
+const interstitial = InterstitialAd.createForAdRequest(adUnitId);
 
 type MainScreenPropTypes = {
   navigation: any;
@@ -48,37 +39,20 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
 
   const [loaded, setLoaded] = useState(false);
   const [screenLoading, setScreenLoading] = useState(false);
+  const [adsEnabledIos, setAdsEnabledIos] = useState(false);
+  const [adsEnabledAndroid, setAdsEnabledAndroid] = useState(false);
+  const [reloadAd, setReloadAd] = useState(false);
 
-  remoteConfig().setDefaults({
-    ads_enabled_ios: false, // Default value for ads on iOS
-    ads_enabled: false, // Default value for ads on Android
-  });
+  // remoteConfig().setDefaults({
+  //   ads_enabled_ios: false, // Default value for ads on iOS
+  //   ads_enabled: false, // Default value for ads on Android
+  // });
 
-  const fetchRemoteConfig = async () => {
-    try {
-      await remoteConfig().fetchAndActivate(); // Fetch and activate the config
-
-      const adsEnabled = remoteConfig()
-        .getValue('ads_enabled_android')
-        .asBoolean();
-      const adsEnablediOS = remoteConfig()
-        .getValue('ads_enabled_ios')
-        .asBoolean();
-
-      return {
-        adsEnabled,
-        adsEnablediOS,
-      };
-    } catch (error) {
-      console.error('Error fetching remote config:', error);
-      return {
-        adsEnabled: false, // Default to false on Android if there's an error
-        adsEnablediOS: false, // Default to false on iOS if there's an error
-      };
-    }
-  };
+  // const fetchRemoteConfig = async () => {};
 
   useEffect(() => {
+    console.log('loading Ad');
+
     if (isFocused) {
       interstitial.load();
       setScreenLoading(false);
@@ -92,24 +66,7 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
         setLoaded(true);
       },
     );
-    const unsubsacribe = interstitial.addAdEventListener(
-      AdEventType.CLOSED,
-      () => {
-        navigation.navigate('ChatScreen');
-      },
-    );
-    const unsubsawcribe = interstitial.addAdEventListener(
-      AdEventType.OPENED,
-      () => {
-        navigation.navigate('ChatScreen');
-      },
-    );
-    const unsubsawwcribe = interstitial.addAdEventListener(
-      AdEventType.CLICKED,
-      () => {
-        navigation.navigate('ChatScreen');
-      },
-    );
+
     // Start loading the interstitial straight away
     interstitial.load();
 
@@ -117,13 +74,105 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
     return unsubscribe;
   }, []);
 
-  const onContinuePress = async () => {
-    setScreenLoading(true);
-    const {adsEnabled, adsEnablediOS} = await fetchRemoteConfig();
-    console.log('REMOTE CONFIG android', adsEnabled);
-    console.log('REMOTE CONFIG ios', adsEnablediOS);
+  // Use a separate useEffect for reloading the ad based on reloadAd state change
+  useEffect(() => {
+    if (reloadAd) {
+      console.log('Reloading Ad');
 
-    if (Platform.OS === 'ios' && adsEnablediOS) {
+      const unsubscribe = interstitial.addAdEventListener(
+        AdEventType.LOADED,
+        () => {
+          setLoaded(true);
+        },
+      );
+
+      // Start loading the interstitial straight away
+      interstitial.load();
+
+      // Unsubscribe from events on unmount
+      return unsubscribe;
+    }
+  }, [reloadAd]);
+
+  useEffect(() => {
+    const fetchRemote = async () => {
+      try {
+        console.log(
+          'FETCHING REMOTE CONFIG',
+          await remoteConfig().fetchAndActivate(),
+        );
+
+        await remoteConfig().fetchAndActivate(); // Fetch and activate the config
+        await remoteConfig().setConfigSettings({
+          minimumFetchIntervalMillis: 5000,
+          // Other Remote Config settings
+        });
+
+        if (Platform.OS === 'android') {
+          const adsEnabled = remoteConfig().getValue('ads_enabled').asBoolean();
+          setAdsEnabledAndroid(adsEnabled);
+          // console.log('ADS ENABLED ANDROID123', adsEnabled);
+        } else if (Platform.OS === 'ios') {
+          const adsEnabled = remoteConfig()
+            .getValue('ads_enabled_ios')
+            .asBoolean();
+          setAdsEnabledIos(adsEnabled);
+          console.log('ADS ENABLED IOS', adsEnabled);
+        } else {
+          // Handle other platforms if needed
+          setAdsEnabledIos(false);
+          setAdsEnabledAndroid(false);
+        }
+      } catch (error) {
+        // console.error('Error fetching remote config:', error);
+        setAdsEnabledIos(false);
+        setAdsEnabledAndroid(false);
+      }
+    };
+
+    fetchRemote();
+  }, []);
+
+  useEffect(() => {
+    interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('AD SEEN');
+      interstitial.load();
+      setReloadAd(true);
+      navigation.navigate('ChatScreen');
+    });
+    interstitial.addAdEventListener(AdEventType.OPENED, () => {
+      console.log('AD SEEN');
+      interstitial.load();
+      setReloadAd(true);
+      navigation.navigate('ChatScreen');
+    });
+    interstitial.addAdEventListener(AdEventType.CLICKED, () => {
+      console.log('AD SEEN');
+      interstitial.load();
+      setReloadAd(true);
+      navigation.navigate('ChatScreen');
+    });
+    interstitial.addAdEventListener(AdEventType.ERROR, () => {
+      console.log('AD SEEN');
+      interstitial.load();
+      setReloadAd(true);
+      navigation.navigate('ChatScreen');
+    });
+
+    // Start loading the interstitial straight away
+  }, []);
+
+  const onContinuePress = async () => {
+    // interstitial.show();
+    setReloadAd(false);
+    setScreenLoading(true);
+    // const {adsEnabled, adsEnablediOS} = await fetchRemoteConfig();
+    // console.log('REMOTE CONFIG ios continie', adsEnabledIos);
+    // console.log('REMOTE CONFIG android continue', adsEnabledAndroid);
+
+    // return;
+
+    if (Platform.OS === 'ios' && adsEnabledIos) {
       // Show ads only on iOS with adsEnablediOS true
       try {
         interstitial.show();
@@ -131,7 +180,7 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
         console.log('Error', error);
         navigation.navigate('ChatScreen');
       }
-    } else if (Platform.OS === 'android' && adsEnabled) {
+    } else if (Platform.OS === 'android' && adsEnabledAndroid) {
       // Show ads only on Android with adsEnabledAndroid true
       try {
         interstitial.show();
@@ -144,6 +193,36 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
       navigation.navigate('ChatScreen');
     }
   };
+  // const onContinuePress = async () => {
+  //   setScreenLoading(true);
+  //   // const {adsEnabled, adsEnablediOS} = await fetchRemoteConfig();
+  //   console.log('REMOTE CONFIG ios continie', adsEnabledIos);
+  //   console.log('REMOTE CONFIG android continue', adsEnabledAndroid);
+
+  //   // return;
+
+  //   if (Platform.OS === 'ios' && adsEnabledIos) {
+  //     // Show ads only on iOS with adsEnablediOS true
+  //     try {
+  //       interstitial.show();
+  //     } catch (error) {
+  //       console.log('Error', error);
+  //       navigation.navigate('ChatScreen');
+  //     }
+  //   } else if (Platform.OS === 'android' && adsEnabledAndroid) {
+  //     // Show ads only on Android with adsEnabledAndroid true
+  //     try {
+  //       interstitial.show();
+  //     } catch (error) {
+  //       console.log('Error', error);
+  //       navigation.navigate('ChatScreen');
+  //     }
+  //   } else {
+  //     // Don't show ads or show on Android
+  //     navigation.navigate('ChatScreen');
+  //   }
+  // };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.headerContainer}>

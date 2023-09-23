@@ -121,6 +121,8 @@ dependencies {
     implementation("com.facebook.react:react-android")
     // implementation project(':@react-native-voice_voice')
     implementation 'com.android.support:multidex:2.0.1' //enter the latest multidex version
+    implementation 'com.google.android.gms:play-services-ads:22.4.0'
+
 
 
 
