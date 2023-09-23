@@ -34,15 +34,15 @@ import {
 } from '../../Data/Suggestions';
 import styles from './styles';
 
-const adUnitId = __DEV__
-  ? TestIds.REWARDED
-  : Platform.OS === 'ios'
-  ? 'ca-app-pub-4161728863134324/4040155771'
-  : 'ca-app-pub-4161728863134324/7479555950';
+const adUnitId = TestIds.REWARDED;
 
-const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-  requestNonPersonalizedAdsOnly: true,
-});
+// const adUnitId = __DEV__
+//   ? TestIds.REWARDED
+//   : Platform.OS === 'ios'
+//   ? 'ca-app-pub-4161728863134324/4040155771'
+//   : 'ca-app-pub-4161728863134324/7479555950';
+
+const rewarded = RewardedAd.createForAdRequest(adUnitId);
 
 type ChatScreenPropTypes = {
   navigation: any;
@@ -55,7 +55,6 @@ type ChatMessage = {
 
 const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const flatListRef = useRef(null);
-  //
   const isAndroid = Platform.OS === 'android';
   const [text, setText] = useState('');
   const [showSideModal, setShowSideModal] = useState(false);
@@ -65,7 +64,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const apiKey = CONSTANTS.API_KEY;
 
   const [result, setResult] = useState<any>('');
-  // console.log('🚀 ~ file: ChatScreen.tsx:64 ~ ChatScreen ~ result:', result);
   const [error, setError] = useState<any>('');
   const [isRecording, setIsRecording] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
@@ -76,12 +74,17 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [questionsAsked, setQuestionsAsked] = useState(0);
   const [isSending, setIsSending] = useState(false); // New state variable for activity indicator
   const [loading, setLoading] = useState(false); // Initially, show the loading indicator
-  // Inside your ChatScreen component
   const [selectedCategory, setSelectedCategory] = useState('');
   const [lowerFlatListData, setLowerFlatListData] = useState([]);
   const [selectedChatSession, setSelectedChatSession] = useState(null);
   const [saveSession, setSaveSession] = useState(false);
   const [chatSessionName, setChatSessionName] = useState([]);
+  const [reloadAd, setReloadAd] = useState(false);
+
+  //new login by chat gpt
+  // const [currentQuestionsAsked, setCurrentQuestionsAsked] = useState(0);
+
+  //new login by chat gpt
 
   useEffect(() => {
     const checkMicPermission = async () => {
@@ -111,29 +114,52 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     loadSavedChatSessions(); // Load chat sessions when component mounts
   }, [questionsAsked]);
 
+  // useEffect(() => {
+  //   if (reloadAd) {
+  //     console.log('Reloading Rewarded Ads');
+
+  //     rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
+  //       setLoaded(true);
+  //       console.log('Rewarded Has LOADED FROM HERE');
+  //     });
+
+  //     rewarded.load();
+  //   }
+  // }, [reloadAd]);
+
+  // MY WORKIGN LOGIC
   useEffect(() => {
+    console.log('QUESTION INCREMENTED');
+
     const unsubscribeLoaded = rewarded.addAdEventListener(
       RewardedAdEventType.LOADED,
       () => {
         setLoaded(true);
+        console.log('Rewarded Ad Loaded');
       },
     );
     const unsubscribeEarned = rewarded.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
-      reward => {
+
+      () => {
         // console.log('User earned reward of ', reward);
         setLoading(false);
         setQuestionsAsked(0);
+        // rewarded.load();
+        setReloadAd(true);
+        console.log('Reward Given');
 
         // setText('');
-        Alert.alert(
-          'Thank you for watching the ad',
-          'you can continue with your search now!',
-        );
+        // Alert.alert(
+        //   'Thank you for watching the ad',
+        //   'you can continue with your search now!',
+        // );
       },
     );
 
     // Start loading the rewarded ad straight away
+    // console.log('LOADING AD HERE');
+
     rewarded.load();
 
     // Unsubscribe from events on unmount
@@ -142,7 +168,42 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       unsubscribeEarned();
     };
   }, [questionsAsked]);
+  // MY WORKIGN LOGIC
 
+  // useEffect(() => {
+  //   const unsubscribeLoaded = rewarded.addAdEventListener(
+  //     RewardedAdEventType.LOADED,
+  //     () => {
+  //       setLoaded(true);
+  //       console.log('Rewarded Ad Loaded');
+  //     },
+  //   );
+  //   const unsubscribeEarned = rewarded.addAdEventListener(
+  //     RewardedAdEventType.EARNED_REWARD,
+  //     () => {
+  //       setLoading(false);
+  //       setCurrentQuestionsAsked(0); // Reset to 0
+  //       setReloadAd(true);
+  //       console.log('Reward Given');
+  //     },
+  //   );
+
+  //   rewarded.load();
+
+  //   // Unsubscribe from events on unmount
+  //   return () => {
+  //     unsubscribeLoaded();
+  //     unsubscribeEarned();
+  //   };
+  // }, [currentQuestionsAsked]);
+
+  // useEffect(() => {
+  //   rewarded.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+  //     console.log('Reward Given AD SEEN');
+  //     rewarded.load();
+  //     //load the ad again
+  //   });
+  // }, []);
   // ads Logic
 
   useEffect(() => {
@@ -297,7 +358,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (isAndroid ? result.trim() === '' : result.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked >= 4) {
+    if (questionsAsked >= 3) {
       Alert.alert(
         'Limit reached',
         'you can extend your limit by watching an ad',
@@ -305,28 +366,28 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           {
             text: 'Watch Ad',
             onPress: () => {
-              setLoading(true),
-                setTimeout(() => {
-                  try {
-                    // rewarded.load();
-                    rewarded.show();
-                    // showRewardedAd();
-                  } catch (error) {
-                    Alert.alert(
-                      'No Ads',
-                      'No ads to show currently, please try again in a while',
-                      [
-                        {
-                          text: 'Ok',
-                          onPress: () => setQuestionsAsked(0),
-                        },
-                      ],
-                    );
-                    setLoading(false);
-                  }
+              setLoading(true), tempFunc();
+              // setTimeout(() => {
+              //   try {
+              //     // rewarded.load();
+              //     rewarded.show();
+              //     // showRewardedAd();
+              //   } catch (error) {
+              //     Alert.alert(
+              //       'No Ads',
+              //       'No ads to show currently, please try again in a while',
+              //       [
+              //         {
+              //           text: 'Ok',
+              //           onPress: () => setQuestionsAsked(0),
+              //         },
+              //       ],
+              //     );
+              //     setLoading(false);
+              //   }
 
-                  // setLoading(false);
-                }, 10000);
+              //   // setLoading(false);
+              // }, 10000);
             },
             // onPress: () => {
             //   setLoading(true);
@@ -342,6 +403,10 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           },
         ],
       );
+
+      console.log('HANDLE SEND FUNCITON ');
+      setQuestionsAsked(0);
+
       return;
     }
     const systemMessage = {
@@ -554,6 +619,22 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     setLowerFlatListData(lowerFlatListDataMap[category] || []);
   };
 
+  const tempFunc = async () => {
+    setQuestionsAsked(questionsAsked + 1);
+    setReloadAd(false);
+    setTimeout(() => {
+      rewarded.show();
+    }, 3000);
+  };
+
+  // const tempFunc = async () => {
+  //   const newQuestionsAsked = currentQuestionsAsked + 1;
+  //   setCurrentQuestionsAsked(newQuestionsAsked);
+  //   setTimeout(() => {
+  //     rewarded.show();
+  //   }, 3000);
+  // };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ImageBackground
@@ -663,7 +744,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         />
         <TouchableOpacity
           style={styles.sendButtonContainer}
-          // onPress={() => showAdd()}
+          // onPress={() => tempFunc()}
           onPress={() => handleSend()}
           disabled={isSending} // Disable the button when API call is in progress
         >
