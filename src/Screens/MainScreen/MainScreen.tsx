@@ -39,8 +39,8 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
 
   const [loaded, setLoaded] = useState(false);
   const [screenLoading, setScreenLoading] = useState(false);
-  const [adsEnabledIos, setAdsEnabledIos] = useState(false);
-  const [adsEnabledAndroid, setAdsEnabledAndroid] = useState(false);
+  const [adsEnabledIos, setAdsEnabledIos] = useState(true);
+  const [adsEnabledAndroid, setAdsEnabledAndroid] = useState(true);
   const [reloadAd, setReloadAd] = useState(false);
 
   // remoteConfig().setDefaults({
@@ -82,6 +82,8 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
       const unsubscribe = interstitial.addAdEventListener(
         AdEventType.LOADED,
         () => {
+          console.log('INTERSTITIAL AD LOADED');
+
           setLoaded(true);
         },
       );
@@ -104,7 +106,7 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
 
         await remoteConfig().fetchAndActivate(); // Fetch and activate the config
         await remoteConfig().setConfigSettings({
-          minimumFetchIntervalMillis: 5000,
+          minimumFetchIntervalMillis: 500,
           // Other Remote Config settings
         });
 
@@ -138,24 +140,28 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
       console.log('AD SEEN');
       interstitial.load();
       setReloadAd(true);
+      setScreenLoading(false);
       navigation.navigate('ChatScreen');
     });
     interstitial.addAdEventListener(AdEventType.OPENED, () => {
       console.log('AD SEEN');
       interstitial.load();
       setReloadAd(true);
+      setScreenLoading(false);
       navigation.navigate('ChatScreen');
     });
     interstitial.addAdEventListener(AdEventType.CLICKED, () => {
       console.log('AD SEEN');
       interstitial.load();
       setReloadAd(true);
+      setScreenLoading(false);
       navigation.navigate('ChatScreen');
     });
     interstitial.addAdEventListener(AdEventType.ERROR, () => {
       console.log('AD SEEN');
       interstitial.load();
       setReloadAd(true);
+      setScreenLoading(false);
       navigation.navigate('ChatScreen');
     });
 
@@ -163,34 +169,30 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
   }, []);
 
   const onContinuePress = async () => {
-    // interstitial.show();
     setReloadAd(false);
     setScreenLoading(true);
-    // const {adsEnabled, adsEnablediOS} = await fetchRemoteConfig();
-    // console.log('REMOTE CONFIG ios continie', adsEnabledIos);
-    // console.log('REMOTE CONFIG android continue', adsEnabledAndroid);
-
-    // return;
 
     if (Platform.OS === 'ios' && adsEnabledIos) {
       // Show ads only on iOS with adsEnablediOS true
-      try {
+
+      setTimeout(() => {
         interstitial.show();
-      } catch (error) {
-        console.log('Error', error);
-        navigation.navigate('ChatScreen');
-      }
+      }, 3000);
+      // setScreenLoading(false);
     } else if (Platform.OS === 'android' && adsEnabledAndroid) {
       // Show ads only on Android with adsEnabledAndroid true
-      try {
+
+      setTimeout(() => {
         interstitial.show();
-      } catch (error) {
-        console.log('Error', error);
-        navigation.navigate('ChatScreen');
-      }
+      }, 3000);
+      // setScreenLoading(false);
     } else {
+      // interstitial.show();
       // Don't show ads or show on Android
-      navigation.navigate('ChatScreen');
+      // setScreenLoading(false);
+      setTimeout(() => {
+        navigation.navigate('ChatScreen');
+      }, 3000);
     }
   };
   // const onContinuePress = async () => {
