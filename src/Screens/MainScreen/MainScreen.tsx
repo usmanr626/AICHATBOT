@@ -195,35 +195,6 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
       }, 3000);
     }
   };
-  // const onContinuePress = async () => {
-  //   setScreenLoading(true);
-  //   // const {adsEnabled, adsEnablediOS} = await fetchRemoteConfig();
-  //   console.log('REMOTE CONFIG ios continie', adsEnabledIos);
-  //   console.log('REMOTE CONFIG android continue', adsEnabledAndroid);
-
-  //   // return;
-
-  //   if (Platform.OS === 'ios' && adsEnabledIos) {
-  //     // Show ads only on iOS with adsEnablediOS true
-  //     try {
-  //       interstitial.show();
-  //     } catch (error) {
-  //       console.log('Error', error);
-  //       navigation.navigate('ChatScreen');
-  //     }
-  //   } else if (Platform.OS === 'android' && adsEnabledAndroid) {
-  //     // Show ads only on Android with adsEnabledAndroid true
-  //     try {
-  //       interstitial.show();
-  //     } catch (error) {
-  //       console.log('Error', error);
-  //       navigation.navigate('ChatScreen');
-  //     }
-  //   } else {
-  //     // Don't show ads or show on Android
-  //     navigation.navigate('ChatScreen');
-  //   }
-  // };
 
   return (
     <SafeAreaView style={styles.mainContainer}>

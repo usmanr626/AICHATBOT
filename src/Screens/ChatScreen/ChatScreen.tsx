@@ -42,7 +42,10 @@ const adUnitId = TestIds.REWARDED;
 //   ? 'ca-app-pub-4161728863134324/4040155771'
 //   : 'ca-app-pub-4161728863134324/7479555950';
 
-const rewarded = RewardedAd.createForAdRequest(adUnitId);
+const rewarded = RewardedAd.createForAdRequest(adUnitId, {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ['fashion', 'clothing'],
+});
 
 type ChatScreenPropTypes = {
   navigation: any;
@@ -168,6 +171,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       unsubscribeEarned();
     };
   }, [questionsAsked]);
+
   // MY WORKIGN LOGIC
 
   // useEffect(() => {
@@ -358,7 +362,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (isAndroid ? result.trim() === '' : result.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked >= 3) {
+    if (questionsAsked >= 0) {
       Alert.alert(
         'Limit reached',
         'you can extend your limit by watching an ad',
@@ -366,7 +370,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           {
             text: 'Watch Ad',
             onPress: () => {
-              setLoading(true), tempFunc();
+              // setLoading(true), tempFunc();
               // setTimeout(() => {
               //   try {
               //     // rewarded.load();
@@ -385,7 +389,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
               //     );
               //     setLoading(false);
               //   }
-
               //   // setLoading(false);
               // }, 10000);
             },
@@ -744,8 +747,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         />
         <TouchableOpacity
           style={styles.sendButtonContainer}
-          // onPress={() => tempFunc()}
-          onPress={() => handleSend()}
+          onPress={() => tempFunc()}
+          // onPress={() => handleSend()}
           disabled={isSending} // Disable the button when API call is in progress
         >
           {isSending ? ( // Show ActivityIndicator when API call is in progress
