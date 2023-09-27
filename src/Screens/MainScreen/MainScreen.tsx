@@ -21,6 +21,8 @@ import {
 
 import remoteConfig from '@react-native-firebase/remote-config';
 
+import crashlytics from '@react-native-firebase/crashlytics';
+
 // const adUnitId = TestIds.INTERSTITIAL;
 
 const adUnitId = __DEV__
@@ -169,6 +171,7 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
   }, []);
 
   const onContinuePress = async () => {
+    crashlytics().log('User CONTINUED');
     setReloadAd(false);
     setScreenLoading(true);
 

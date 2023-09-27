@@ -2,6 +2,10 @@
   "name": "AI Chatbot",
   "displayName": "AI Chatbot",
 
+  "react-native": {
+    "crashlytics_debug_enabled": true
+  },
+
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-4161728863134324~6647720397",
     "ios_app_id": "ca-app-pub-4161728863134324~2276428215",
