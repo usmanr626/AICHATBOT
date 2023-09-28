@@ -116,7 +116,7 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
         if (Platform.OS === 'android') {
           const adsEnabled = remoteConfig().getValue('ads_enabled').asBoolean();
           setAdsEnabledAndroid(adsEnabled);
-          // console.log('ADS ENABLED ANDROID123', adsEnabled);
+          console.log('ADS ENABLED ANDROID123', adsEnabled);
         } else if (Platform.OS === 'ios') {
           const adsEnabled = remoteConfig()
             .getValue('ads_enabled_ios')

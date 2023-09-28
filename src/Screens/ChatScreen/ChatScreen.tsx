@@ -35,6 +35,7 @@ import {
   suggestionsCategoryData,
 } from '../../Data/Suggestions';
 import styles from './styles';
+import remoteConfig from '@react-native-firebase/remote-config';
 
 const adUnitId = TestIds.INTERSTITIAL;
 // const adUnitId = __DEV__
@@ -91,8 +92,55 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [chatSessionName, setChatSessionName] = useState([]);
   const [reloadAd, setReloadAd] = useState(false);
 
+  const [adsEnabledIos, setAdsEnabledIos] = useState(true);
+  const [adsEnabledAndroid, setAdsEnabledAndroid] = useState(true);
+
   //new login by chat gpt
   // const [currentQuestionsAsked, setCurrentQuestionsAsked] = useState(0);
+
+  //remote config for ads
+  useEffect(() => {
+    const fetchRemote = async () => {
+      try {
+        console.log(
+          'FETCHING REMOTE CONFIG IN CHAT SCREEN',
+          await remoteConfig().fetchAndActivate(),
+        );
+
+        await remoteConfig().fetchAndActivate(); // Fetch and activate the config
+        await remoteConfig().setConfigSettings({
+          minimumFetchIntervalMillis: 500,
+          // Other Remote Config settings
+        });
+
+        if (Platform.OS === 'android') {
+          const adsEnabled = remoteConfig()
+            .getValue('ads_chatScreen')
+            .asBoolean();
+          setAdsEnabledAndroid(adsEnabled);
+          console.log('ADS ENABLED ANDROID IN CHAT SCREEN', adsEnabled);
+        } else if (Platform.OS === 'ios') {
+          const adsEnabled = remoteConfig()
+            .getValue('ads_chatScreen_ios')
+            .asBoolean();
+          setAdsEnabledIos(adsEnabled);
+          console.log('ADS ENABLED IOS IN CHAT SCREEN', adsEnabled);
+        } else {
+          // Handle other platforms if needed
+          setAdsEnabledIos(false);
+          setAdsEnabledAndroid(false);
+        }
+      } catch (error) {
+        // console.error('Error fetching remote config:', error);
+        setAdsEnabledIos(false);
+        setAdsEnabledAndroid(false);
+      }
+    };
+
+    fetchRemote();
+  }, []);
+
+  //remote config for ads
 
   //new login by chat gpt
 
@@ -398,55 +446,60 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (isAndroid ? result.trim() === '' : result.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked % 4 === 0) {
-      Alert.alert(
-        'Limit reached',
-        'you can extend your limit by watching an ad',
-        [
-          {
-            text: 'Watch Ad',
-            onPress: () => {
-              setLoading(true), tempFunc();
-              // setTimeout(() => {
-              //   try {
-              //     // rewarded.load();
-              //     rewarded.show();
-              //     // showRewardedAd();
-              //   } catch (error) {
-              //     Alert.alert(
-              //       'No Ads',
-              //       'No ads to show currently, please try again in a while',
-              //       [
-              //         {
-              //           text: 'Ok',
-              //           onPress: () => setQuestionsAsked(0),
-              //         },
-              //       ],
-              //     );
-              //     setLoading(false);
-              //   }
-              //   // setLoading(false);
-              // }, 10000);
+    if (
+      (Platform.OS === 'ios' && adsEnabledIos) ||
+      (Platform.OS === 'android' && adsEnabledAndroid)
+    ) {
+      if (questionsAsked % 4 === 0) {
+        Alert.alert(
+          'Limit reached',
+          'you can extend your limit by watching an ad',
+          [
+            {
+              text: 'Watch Ad',
+              onPress: () => {
+                setLoading(true), tempFunc();
+                // setTimeout(() => {
+                //   try {
+                //     // rewarded.load();
+                //     rewarded.show();
+                //     // showRewardedAd();
+                //   } catch (error) {
+                //     Alert.alert(
+                //       'No Ads',
+                //       'No ads to show currently, please try again in a while',
+                //       [
+                //         {
+                //           text: 'Ok',
+                //           onPress: () => setQuestionsAsked(0),
+                //         },
+                //       ],
+                //     );
+                //     setLoading(false);
+                //   }
+                //   // setLoading(false);
+                // }, 10000);
+              },
+              // onPress: () => {
+              //   setLoading(true);
+              //   rewarded.show();
+              // },
+
+              style: 'default',
             },
-            // onPress: () => {
-            //   setLoading(true);
-            //   rewarded.show();
-            // },
+            {
+              text: 'Cancel',
+              // onPress: () => console.log('OK Pressed'),
+              style: 'destructive',
+            },
+          ],
+        );
 
-            style: 'default',
-          },
-          {
-            text: 'Cancel',
-            // onPress: () => console.log('OK Pressed'),
-            style: 'destructive',
-          },
-        ],
-      );
+        console.log('HANDLE SEND FUNCITON ');
+        setQuestionsAsked(0);
 
-      console.log('HANDLE SEND FUNCITON ');
-      setQuestionsAsked(0);
-
-      return;
+        return;
+      }
     }
     const systemMessage = {
       role: 'system',
@@ -662,12 +715,17 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     setQuestionsAsked(questionsAsked + 1);
     setReloadAd(false);
     setTimeout(() => {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === 'android' && adsEnabledAndroid) {
         interstitial.show();
         setLoading(false);
-      } else {
+      } else if (Platform.OS === 'ios' && adsEnabledIos) {
         rewarded.show();
         // setLoading(false);
+      } else {
+        console.log('HERE', questionsAsked);
+
+        setLoading(false);
+        setQuestionsAsked(0);
       }
     }, 1000);
   };
