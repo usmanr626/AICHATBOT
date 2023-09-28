@@ -24,12 +24,13 @@ import remoteConfig from '@react-native-firebase/remote-config';
 import crashlytics from '@react-native-firebase/crashlytics';
 
 // const adUnitId = TestIds.INTERSTITIAL;
+const adUnitId = TestIds.INTERSTITIAL;
 
-const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : Platform.OS === 'android'
-  ? `ca-app-pub-4161728863134324/2377302896`
-  : 'ca-app-pub-4161728863134324/3758972213';
+// const adUnitId = __DEV__
+//   ? TestIds.INTERSTITIAL
+//   : Platform.OS === 'android'
+//   ? `ca-app-pub-4161728863134324/2377302896`
+//   : 'ca-app-pub-4161728863134324/3758972213';
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId);
 

@@ -19,9 +19,11 @@ import {
   View,
 } from 'react-native';
 import {
+  AdEventType,
+  InterstitialAd,
+  TestIds,
   RewardedAd,
   RewardedAdEventType,
-  TestIds,
 } from 'react-native-google-mobile-ads';
 import Modal from 'react-native-modal';
 import {CONSTANTS} from '../../Assets/Constants';
@@ -34,18 +36,21 @@ import {
 } from '../../Data/Suggestions';
 import styles from './styles';
 
-const adUnitId = TestIds.REWARDED;
-
+const adUnitId = TestIds.INTERSTITIAL;
 // const adUnitId = __DEV__
-//   ? TestIds.REWARDED
-//   : Platform.OS === 'ios'
-//   ? 'ca-app-pub-4161728863134324/4040155771'
-//   : 'ca-app-pub-4161728863134324/7479555950';
+//   ? TestIds.INTERSTITIAL
+//   : Platform.OS === 'android'
+//   ? `ca-app-pub-4161728863134324/5663995497`
+//   : 'ca-app-pub-4161728863134324/3758972213';
 
-const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-  requestNonPersonalizedAdsOnly: true,
-  keywords: ['fashion', 'clothing'],
-});
+const rewardedAdUnitId = TestIds.REWARDED;
+
+// const rewardedAdUnitId = __DEV__
+//   ? TestIds.REWARDED
+//   : 'ca-app-pub-4161728863134324/4040155771';
+
+const interstitial = InterstitialAd.createForAdRequest(adUnitId);
+const rewarded = RewardedAd.createForAdRequest(rewardedAdUnitId);
 
 type ChatScreenPropTypes = {
   navigation: any;
@@ -74,6 +79,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [chatSessions, setChatSessions] = useState<any[]>([]);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [rewardedLoaded, setRewardedLoaded] = useState(false);
+
   const [questionsAsked, setQuestionsAsked] = useState(0);
   const [isSending, setIsSending] = useState(false); // New state variable for activity indicator
   const [loading, setLoading] = useState(false); // Initially, show the loading indicator
@@ -131,46 +138,75 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   // }, [reloadAd]);
 
   // MY WORKIGN LOGIC
-  useEffect(() => {
-    console.log('QUESTION INCREMENTED');
 
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      rewarded.load();
+    } else {
+      interstitial.load();
+    }
+  }, [questionsAsked]);
+
+  useEffect(() => {
+    const unsubscribe = interstitial.addAdEventListener(
+      AdEventType.LOADED,
+      () => {
+        console.log('INTERSTITIAL AD LOADED ON CHAT SCREEN');
+
+        setLoaded(true);
+      },
+    );
+    const unsubscribe2 = interstitial.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        Alert.alert(
+          'Thankyou for watching the ad, you can continue with your search',
+        );
+
+        setLoaded(true);
+      },
+    );
+
+    // Start loading the interstitial straight away
+    interstitial.load();
+
+    // Unsubscribe from events on unmount
+    return () => {
+      unsubscribe();
+      unsubscribe2();
+    };
+  }, []);
+
+  useEffect(() => {
     const unsubscribeLoaded = rewarded.addAdEventListener(
       RewardedAdEventType.LOADED,
       () => {
-        setLoaded(true);
         console.log('Rewarded Ad Loaded');
+
+        setRewardedLoaded(true);
       },
     );
     const unsubscribeEarned = rewarded.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
-
-      () => {
-        // console.log('User earned reward of ', reward);
+      reward => {
         setLoading(false);
-        setQuestionsAsked(0);
-        // rewarded.load();
-        setReloadAd(true);
-        console.log('Reward Given');
-
-        // setText('');
-        // Alert.alert(
-        //   'Thank you for watching the ad',
-        //   'you can continue with your search now!',
-        // );
+        Alert.alert(
+          'Thankyou for watching the ad, you can continue with your search',
+        );
       },
     );
 
     // Start loading the rewarded ad straight away
-    // console.log('LOADING AD HERE');
-
-    rewarded.load();
+    if (Platform.OS === 'ios') {
+      rewarded.load();
+    }
 
     // Unsubscribe from events on unmount
     return () => {
       unsubscribeLoaded();
       unsubscribeEarned();
     };
-  }, [questionsAsked]);
+  }, []);
 
   // MY WORKIGN LOGIC
 
@@ -362,7 +398,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     if (isAndroid ? result.trim() === '' : result.trim() === '') {
       return; // Do nothing if the message is empty
     }
-    if (questionsAsked >= 0) {
+    if (questionsAsked % 4 === 0) {
       Alert.alert(
         'Limit reached',
         'you can extend your limit by watching an ad',
@@ -370,7 +406,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           {
             text: 'Watch Ad',
             onPress: () => {
-              // setLoading(true), tempFunc();
+              setLoading(true), tempFunc();
               // setTimeout(() => {
               //   try {
               //     // rewarded.load();
@@ -626,16 +662,18 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     setQuestionsAsked(questionsAsked + 1);
     setReloadAd(false);
     setTimeout(() => {
-      rewarded.show();
-    }, 3000);
+      if (Platform.OS === 'android') {
+        interstitial.show();
+        setLoading(false);
+      } else {
+        rewarded.show();
+        // setLoading(false);
+      }
+    }, 1000);
   };
 
   // const tempFunc = async () => {
-  //   const newQuestionsAsked = currentQuestionsAsked + 1;
-  //   setCurrentQuestionsAsked(newQuestionsAsked);
-  //   setTimeout(() => {
-  //     rewarded.show();
-  //   }, 3000);
+  //   rewarded.show();
   // };
 
   return (
@@ -747,8 +785,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         />
         <TouchableOpacity
           style={styles.sendButtonContainer}
-          onPress={() => tempFunc()}
-          // onPress={() => handleSend()}
+          // onPress={() => tempFunc()}
+          onPress={() => handleSend()}
           disabled={isSending} // Disable the button when API call is in progress
         >
           {isSending ? ( // Show ActivityIndicator when API call is in progress
@@ -780,7 +818,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
             />
             <View style={styles.modalChatMainContainer}>
               <View style={styles.modalChatSecondaryContainer}>
-                <SafeAreaView />
+                {/* <SafeAreaView />› */}
+
                 <TouchableOpacity
                   onPress={() => startNewChat()}
                   style={styles.newChatButtonContainer}>
@@ -857,6 +896,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
                     {LABELS.cleanHistory}
                   </Text>
                 </TouchableOpacity>
+
                 <View style={{bottom: 20}}>
                   <Text
                     style={{fontSize: 12, color: 'white', letterSpacing: 1}}>
