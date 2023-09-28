@@ -69,8 +69,11 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [showSideModal, setShowSideModal] = useState(false);
   const [suggestionModal, setSuggestionModal] = useState(false);
   const [data, setData] = useState<any[]>([]);
-  const apiUrl = CONSTANTS.API_URL;
-  const apiKey = CONSTANTS.API_KEY;
+  // const apiKey = CONSTANTS.API_KEY;
+
+  const [apiKey, setApiKey] = useState(
+    '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',
+  );
 
   const [result, setResult] = useState<any>('');
   const [error, setError] = useState<any>('');
@@ -91,6 +94,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [saveSession, setSaveSession] = useState(false);
   const [chatSessionName, setChatSessionName] = useState([]);
   const [reloadAd, setReloadAd] = useState(false);
+  const [questionLimit, setQuestionLimit] = useState(3);
 
   const [adsEnabledIos, setAdsEnabledIos] = useState(true);
   const [adsEnabledAndroid, setAdsEnabledAndroid] = useState(true);
@@ -98,7 +102,51 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   //new login by chat gpt
   // const [currentQuestionsAsked, setCurrentQuestionsAsked] = useState(0);
 
+  //remote config for numer of questions
+
   //remote config for ads
+
+  // useEffect(() => {
+  //   const fetchRemote = async () => {
+  //     try {
+  //       console.log(
+  //         'FETCHING REMOTE CONFIG IN CHAT SCREEN',
+  //         await remoteConfig().fetchAndActivate(),
+  //       );
+
+  //       await remoteConfig().fetchAndActivate(); // Fetch and activate the config
+  //       await remoteConfig().setConfigSettings({
+  //         minimumFetchIntervalMillis: 500,
+  //         // Other Remote Config settings
+  //       });
+
+  //       if (Platform.OS === 'android') {
+  //         const adsEnabled = remoteConfig()
+  //           .getValue('ads_chatScreen')
+  //           .asBoolean();
+  //         setAdsEnabledAndroid(adsEnabled);
+  //         console.log('ADS ENABLED ANDROID IN CHAT SCREEN', adsEnabled);
+  //       } else if (Platform.OS === 'ios') {
+  //         const adsEnabled = remoteConfig()
+  //           .getValue('ads_chatScreen_ios')
+  //           .asBoolean();
+  //         setAdsEnabledIos(adsEnabled);
+  //         console.log('ADS ENABLED IOS IN CHAT SCREEN', adsEnabled);
+  //       } else {
+  //         // Handle other platforms if needed
+  //         setAdsEnabledIos(false);
+  //         setAdsEnabledAndroid(false);
+  //       }
+  //     } catch (error) {
+  //       // console.error('Error fetching remote config:', error);
+  //       setAdsEnabledIos(false);
+  //       setAdsEnabledAndroid(false);
+  //     }
+  //   };
+
+  //   fetchRemote();
+  // }, []);
+
   useEffect(() => {
     const fetchRemote = async () => {
       try {
@@ -130,17 +178,75 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
           setAdsEnabledIos(false);
           setAdsEnabledAndroid(false);
         }
+
+        // Fetch adOnQuestions value within the same useEffect
+        const adOnQuestionsValue = await fetchAdOnQuestions();
+        const apiKey = await fetchApiKey();
+        if (adOnQuestionsValue !== null) {
+          // Now you have the adOnQuestions value to use in your code
+          console.log('adOnQuestions:', adOnQuestionsValue);
+        }
       } catch (error) {
-        // console.error('Error fetching remote config:', error);
+        console.error('Error fetching remote config:', error);
         setAdsEnabledIos(false);
         setAdsEnabledAndroid(false);
       }
     };
 
+    const fetchAdOnQuestions = async () => {
+      try {
+        if (Platform.OS === 'android') {
+          const adOnQuestionsValue = remoteConfig()
+            .getValue('adOnQuestions')
+            .asNumber();
+          setQuestionLimit(adOnQuestionsValue);
+          console.log('QUESTIONS NUMBER ANDROID', adOnQuestionsValue);
+          return adOnQuestionsValue;
+        } else if (Platform.OS === 'ios') {
+          const adOnQuestionsValue = remoteConfig()
+            .getValue('adOnQuestions')
+            .asNumber();
+          setQuestionLimit(adOnQuestionsValue);
+          console.log('QUESTIONS NUMBER IOS', adOnQuestionsValue);
+
+          return adOnQuestionsValue;
+        }
+      } catch (error) {
+        console.error(
+          'Error fetching adOnQuestions from remote config:',
+          error,
+        );
+        return null;
+      }
+    };
+    const fetchApiKey = async () => {
+      try {
+        if (Platform.OS === 'android') {
+          const apiKey = remoteConfig().getValue('apiKey').asString();
+          setApiKey(apiKey);
+          console.log('API KEY ANDROID', apiKey);
+          return apiKey;
+        } else if (Platform.OS === 'ios') {
+          const apiKey = remoteConfig().getValue('apiKey_ios').asString();
+          setApiKey(apiKey);
+          console.log('API KEY IOS', apiKey);
+
+          return apiKey;
+        }
+      } catch (error) {
+        console.error(
+          'Error fetching adOnQuestions from remote config:',
+          error,
+        );
+        return null;
+      }
+    };
+
     fetchRemote();
-  }, []);
+  }, []); // Empty dependency array to run the effect only once on component mount
 
   //remote config for ads
+  console.log('API KEYYYYYY', apiKey);
 
   //new login by chat gpt
 
@@ -450,7 +556,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       (Platform.OS === 'ios' && adsEnabledIos) ||
       (Platform.OS === 'android' && adsEnabledAndroid)
     ) {
-      if (questionsAsked % 4 === 0) {
+      if (questionsAsked % questionLimit === 0) {
         Alert.alert(
           'Limit reached',
           'you can extend your limit by watching an ad',
