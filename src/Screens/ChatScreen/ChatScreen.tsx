@@ -37,18 +37,18 @@ import {
 import styles from './styles';
 import remoteConfig from '@react-native-firebase/remote-config';
 
-const adUnitId = TestIds.INTERSTITIAL;
-// const adUnitId = __DEV__
-//   ? TestIds.INTERSTITIAL
-//   : Platform.OS === 'android'
-//   ? `ca-app-pub-4161728863134324/5663995497`
-//   : 'ca-app-pub-4161728863134324/3758972213';
+// const adUnitId = TestIds.INTERSTITIAL;
+const adUnitId = __DEV__
+  ? TestIds.INTERSTITIAL
+  : Platform.OS === 'android'
+  ? `ca-app-pub-4161728863134324/5663995497`
+  : 'ca-app-pub-4161728863134324/3758972213';
 
-const rewardedAdUnitId = TestIds.REWARDED;
+// const rewardedAdUnitId = TestIds.REWARDED;
 
-// const rewardedAdUnitId = __DEV__
-//   ? TestIds.REWARDED
-//   : 'ca-app-pub-4161728863134324/4040155771';
+const rewardedAdUnitId = __DEV__
+  ? TestIds.REWARDED
+  : 'ca-app-pub-4161728863134324/4040155771';
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId);
 const rewarded = RewardedAd.createForAdRequest(rewardedAdUnitId);
@@ -85,7 +85,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [loaded, setLoaded] = useState(false);
   const [rewardedLoaded, setRewardedLoaded] = useState(false);
 
-  const [questionsAsked, setQuestionsAsked] = useState(0);
+  const [questionsAsked, setQuestionsAsked] = useState(1);
   const [isSending, setIsSending] = useState(false); // New state variable for activity indicator
   const [loading, setLoading] = useState(false); // Initially, show the loading indicator
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -246,7 +246,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   }, []); // Empty dependency array to run the effect only once on component mount
 
   //remote config for ads
-  console.log('API KEYYYYYY', apiKey);
+  // console.log('API KEYYYYYY', apiKey);
 
   //new login by chat gpt
 
@@ -313,10 +313,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     const unsubscribe2 = interstitial.addAdEventListener(
       AdEventType.CLOSED,
       () => {
-        Alert.alert(
-          'Thankyou for watching the ad, you can continue with your search',
-        );
-
         setLoaded(true);
       },
     );
@@ -344,9 +340,6 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       RewardedAdEventType.EARNED_REWARD,
       reward => {
         setLoading(false);
-        Alert.alert(
-          'Thankyou for watching the ad, you can continue with your search',
-        );
       },
     );
 
@@ -602,7 +595,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         );
 
         console.log('HANDLE SEND FUNCITON ');
-        setQuestionsAsked(0);
+        setQuestionsAsked(1);
 
         return;
       }
@@ -698,7 +691,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   const stopRecording = async () => {
     setIsRecording(false);
-    // console.log('Stopping');
+    console.log('Stopping');
 
     try {
       Voice.removeAllListeners(); // Remove the listener for partial results
@@ -708,16 +701,18 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       // console.log('RESULT RECORDING: ', result);
     } catch (error) {
       setError(error);
-      // console.log('ERROR');
+      console.log('ERROR VOICE', error);
     }
   };
 
   const startRecording = async () => {
     setIsRecording(true);
-    // console.log('Start');
+    console.log('Startt');
     setText('');
     setResult('');
     try {
+      console.log('TRYING VOICE');
+
       await Voice.start('en_US', {
         RECOGNIZER_ENGINE: 'GOOGLE',
         EXTRA_PARTIAL_RESULTS: true,
@@ -818,12 +813,17 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   };
 
   const tempFunc = async () => {
-    setQuestionsAsked(questionsAsked + 1);
+    // setQuestionsAsked(questionsAsked + 1);
     setReloadAd(false);
     setTimeout(() => {
       if (Platform.OS === 'android' && adsEnabledAndroid) {
-        interstitial.show();
-        setLoading(false);
+        try {
+          interstitial.show();
+          setLoading(false);
+        } catch (error) {
+          setQuestionsAsked(1);
+          setLoading(false);
+        }
       } else if (Platform.OS === 'ios' && adsEnabledIos) {
         rewarded.show();
         // setLoading(false);
@@ -831,7 +831,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         console.log('HERE', questionsAsked);
 
         setLoading(false);
-        setQuestionsAsked(0);
+        setQuestionsAsked(1);
       }
     }, 1000);
   };
