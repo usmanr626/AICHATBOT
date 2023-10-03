@@ -558,37 +558,12 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
               text: 'Watch Ad',
               onPress: () => {
                 setLoading(true), tempFunc();
-                // setTimeout(() => {
-                //   try {
-                //     // rewarded.load();
-                //     rewarded.show();
-                //     // showRewardedAd();
-                //   } catch (error) {
-                //     Alert.alert(
-                //       'No Ads',
-                //       'No ads to show currently, please try again in a while',
-                //       [
-                //         {
-                //           text: 'Ok',
-                //           onPress: () => setQuestionsAsked(0),
-                //         },
-                //       ],
-                //     );
-                //     setLoading(false);
-                //   }
-                //   // setLoading(false);
-                // }, 10000);
               },
-              // onPress: () => {
-              //   setLoading(true);
-              //   rewarded.show();
-              // },
 
               style: 'default',
             },
             {
               text: 'Cancel',
-              // onPress: () => console.log('OK Pressed'),
               style: 'destructive',
             },
           ],
