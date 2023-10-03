@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   menuButtonImageStyle: {width: 35, height: 30},
-  textContainer: {marginLeft: '14%'},
+  // textContainer: {marginLeft: '1%'},
   textStyle: {color: 'white', fontSize: 20},
   muteButtonImageStyle: {width: 35, height: 30, left: '50%'},
   settingsButtonImageStyle: {width: 35, height: 30},
