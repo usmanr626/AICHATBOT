@@ -36,6 +36,7 @@ import {
 } from '../../Data/Suggestions';
 import styles from './styles';
 import remoteConfig from '@react-native-firebase/remote-config';
+import DeviceInfo from 'react-native-device-info';
 
 // const adUnitId = TestIds.INTERSTITIAL;
 const adUnitId = __DEV__
@@ -98,54 +99,14 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
 
   const [adsEnabledIos, setAdsEnabledIos] = useState(true);
   const [adsEnabledAndroid, setAdsEnabledAndroid] = useState(true);
+  const deviceId = DeviceInfo.getUniqueId();
 
-  //new login by chat gpt
-  // const [currentQuestionsAsked, setCurrentQuestionsAsked] = useState(0);
-
-  //remote config for numer of questions
-
-  //remote config for ads
-
-  // useEffect(() => {
-  //   const fetchRemote = async () => {
-  //     try {
-  //       console.log(
-  //         'FETCHING REMOTE CONFIG IN CHAT SCREEN',
-  //         await remoteConfig().fetchAndActivate(),
-  //       );
-
-  //       await remoteConfig().fetchAndActivate(); // Fetch and activate the config
-  //       await remoteConfig().setConfigSettings({
-  //         minimumFetchIntervalMillis: 500,
-  //         // Other Remote Config settings
-  //       });
-
-  //       if (Platform.OS === 'android') {
-  //         const adsEnabled = remoteConfig()
-  //           .getValue('ads_chatScreen')
-  //           .asBoolean();
-  //         setAdsEnabledAndroid(adsEnabled);
-  //         console.log('ADS ENABLED ANDROID IN CHAT SCREEN', adsEnabled);
-  //       } else if (Platform.OS === 'ios') {
-  //         const adsEnabled = remoteConfig()
-  //           .getValue('ads_chatScreen_ios')
-  //           .asBoolean();
-  //         setAdsEnabledIos(adsEnabled);
-  //         console.log('ADS ENABLED IOS IN CHAT SCREEN', adsEnabled);
-  //       } else {
-  //         // Handle other platforms if needed
-  //         setAdsEnabledIos(false);
-  //         setAdsEnabledAndroid(false);
-  //       }
-  //     } catch (error) {
-  //       // console.error('Error fetching remote config:', error);
-  //       setAdsEnabledIos(false);
-  //       setAdsEnabledAndroid(false);
-  //     }
-  //   };
-
-  //   fetchRemote();
-  // }, []);
+  useEffect(() => {
+    const showDeviceId = async () => {
+      console.log('Device ID new:', await deviceId);
+    };
+    showDeviceId();
+  }, []);
 
   useEffect(() => {
     const fetchRemote = async () => {
