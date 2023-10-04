@@ -27,7 +27,7 @@ const ChatScreenHeader = ({
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>{LABELS.AiChatbot}</Text>
       </View>
-      {/* <Pressable
+      <Pressable
         style={{
           padding: 10,
           borderRadius: 20,
@@ -37,7 +37,7 @@ const ChatScreenHeader = ({
         }}
         onPress={onMutePress}>
         <Text style={{color: '#7836ff', fontWeight: 'bold'}}>GO PREMIUM</Text>
-      </Pressable> */}
+      </Pressable>
       <Pressable onPress={onSettingsPress}>
         <Image
           source={IMAGES.settingsButton}

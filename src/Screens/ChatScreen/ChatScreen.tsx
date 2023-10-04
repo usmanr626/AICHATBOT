@@ -776,6 +776,17 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   //   rewarded.show();
   // };
 
+  const goPremium = () => {
+    Alert.alert('Go Premium', 'get unlimited searches for $4.99', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'Purchase', onPress: () => console.log('OK Pressed')},
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ImageBackground
@@ -791,7 +802,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       <ChatScreenHeader
         onSettingsPress={() => onSettingsPressed()}
         // onMutePress={() => showInterAd()}
-        onMutePress={() => console.warn('Mute')}
+        onMutePress={() => goPremium()}
         onMenuPress={() => setShowSideModal(true)}
       />
       <View
