@@ -641,6 +641,8 @@ PODS:
     - GoogleUserMessagingPlatform (= 2.1.0)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+  - RNIap (12.10.8):
+    - React-Core
   - RNPermissions (3.8.4):
     - React-Core
   - RNReanimated (3.3.0):
@@ -756,6 +758,7 @@ DEPENDENCIES:
   - "RNFBRemoteConfig (from `../node_modules/@react-native-firebase/remote-config`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
+  - RNIap (from `../node_modules/react-native-iap`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -897,6 +900,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleMobileAds:
     :path: "../node_modules/react-native-google-mobile-ads"
+  RNIap:
+    :path: "../node_modules/react-native-iap"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNReanimated:
@@ -988,6 +993,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: 0f1e8d8da3814e153c5f1a8f179da90c61f402ea
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
   RNGoogleMobileAds: 507697428d720674d240d07ff3c246e8cbab6f0c
+  RNIap: 99a559a3642155b47aa0622f9693632010a0b4f7
   RNPermissions: f1b49dd05fa9b83993cd05a9ee115247944d8f1a
   RNReanimated: 9f7068e43b9358a46a688d94a5a3adb258139457
   RNScreens: 50ffe2fa2342eabb2d0afbe19f7c1af286bc7fb3
@@ -998,4 +1004,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: ec835e384d0721d6ca92c117726aa87b4f17c5d2
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.13.0
