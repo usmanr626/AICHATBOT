@@ -15,6 +15,7 @@ import {MainScreen} from './src/Screens/MainScreen';
 import {SettingsScreen} from './src/Screens/SettingsScreen';
 
 import remoteConfig from '@react-native-firebase/remote-config';
+import {ProductsScreen} from './src/Screens/ProductsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +92,7 @@ const App = () => {
         <Stack.Screen name="MainScreen" component={MainScreen} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
+        <Stack.Screen name="ProductsScreen" component={ProductsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

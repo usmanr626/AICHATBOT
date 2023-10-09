@@ -777,14 +777,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   // };
 
   const goPremium = () => {
-    Alert.alert('Go Premium', 'get unlimited searches for $4.99', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'Purchase', onPress: () => console.log('OK Pressed')},
-    ]);
+    navigation.navigate('ProductsScreen');
   };
 
   return (
