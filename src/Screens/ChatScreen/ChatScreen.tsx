@@ -70,6 +70,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const [showSideModal, setShowSideModal] = useState(false);
   const [suggestionModal, setSuggestionModal] = useState(false);
   const [data, setData] = useState<any[]>([]);
+  const [isPremiumMember, setIsPremiumMember] = useState(false);
+
   // const apiKey = CONSTANTS.API_KEY;
 
   const [apiKey, setApiKey] = useState(
@@ -771,6 +773,29 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       }
     }, 1000);
   };
+
+  const getIsPremiumMember = async () => {
+    try {
+      const value = await AsyncStorage.getItem('isPremiumMember');
+      // If value is not found, assume it's false
+      return value === 'true' ? true : false;
+    } catch (error) {
+      console.error('Error getting isPremiumMember:', error);
+      // Assuming false in case of an error
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    getIsPremiumMember()
+      .then(value => {
+        Alert.alert('you are premium');
+        setIsPremiumMember(true);
+      })
+      .catch(error => {
+        console.log('Error in useEffect', error);
+      });
+  }, []);
 
   // const tempFunc = async () => {
   //   rewarded.show();
