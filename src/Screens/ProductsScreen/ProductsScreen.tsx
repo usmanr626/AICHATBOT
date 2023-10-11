@@ -1,7 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState, useEffect} from 'react';
-import {View, Text, Platform, Alert, Button} from 'react-native';
+import {
+  View,
+  Text,
+  Platform,
+  Alert,
+  Button,
+  SafeAreaView,
+  ImageBackground,
+  Pressable,
+} from 'react-native';
 import * as IAP from 'react-native-iap';
+import styles from './styles';
+import {IMAGES} from '../../Assets/Images';
+import {CustomTextButton} from '../../Components/CustomTextButton';
 
 const items = Platform.select({
   ios: [],
@@ -10,6 +22,7 @@ const items = Platform.select({
 const ProductsScreen = () => {
   const [purchased, setPurchased] = useState(false);
   const [products, setProducts] = useState(false);
+  const [isPremiumMember, setIsPremiumMember] = useState(false);
 
   let purchaseUpdateSubscription;
   let purchaseErrorSubscription;
@@ -18,6 +31,7 @@ const ProductsScreen = () => {
     try {
       await AsyncStorage.setItem('isPremiumMember', 'true');
       console.log('Is Now A Premium Member');
+      Alert.alert('You are now a Premium Member');
     } catch (error) {
       console.error('Error setting isPremiumMember:', error);
     }
@@ -112,22 +126,42 @@ const ProductsScreen = () => {
 
   if (products?.length > 0) {
     return (
-      <View>
-        {products.map(p => (
-          <Button
-            key={p['productId']}
-            title={`Purchase ${p['price']}`}
-            onPress={async () => {
-              await IAP.requestPurchase({skus: ['chatbot_ai']});
-            }}
-          />
-        ))}
-      </View>
+      <SafeAreaView style={styles.mainContainer}>
+        <View style={{top: 20}}>
+          <Text
+            style={{
+              color: 'white',
+              textAlign: 'center',
+              fontSize: 20,
+              fontWeight: '500',
+            }}>
+            You can get unlimited Searches for lifetime in $4.99
+          </Text>
+        </View>
+        <View style={{top: '10%'}}>
+          {products.map(p => (
+            // <Button
+            //   key={p['productId']}
+            //   title={`Purchase ${p['price']}`}
+            // onPress={async () => {
+            //   await IAP.requestPurchase({skus: ['chatbot_ai']});
+            // }}
+            // />
+            <Pressable
+              onPress={async () => {
+                await IAP.requestPurchase({skus: ['chatbot_ai']});
+              }}
+              style={styles.buttonMainContainer}>
+              <Text style={styles.buttonText}>{`Purchase ${p['price']}`}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </SafeAreaView>
     );
   } else {
     return (
-      <View>
-        <Text>ProductssssScreen</Text>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text>Products Loading...</Text>
       </View>
     );
   }

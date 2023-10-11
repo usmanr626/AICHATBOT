@@ -172,7 +172,7 @@ const MainScreen = ({navigation}: MainScreenPropTypes) => {
   }, []);
 
   const onContinuePress = async () => {
-    crashlytics().log('User CONTINUED');
+    // crashlytics().log('User CONTINUED');
     setReloadAd(false);
     setScreenLoading(true);
 

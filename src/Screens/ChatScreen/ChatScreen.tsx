@@ -512,16 +512,19 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       (Platform.OS === 'ios' && adsEnabledIos) ||
       (Platform.OS === 'android' && adsEnabledAndroid)
     ) {
-      if (questionsAsked % questionLimit === 0) {
+      if (questionsAsked > questionLimit && !isPremiumMember) {
         Alert.alert(
           'Limit reached',
-          'you can extend your limit by watching an ad',
+          'You can get unlimited searches by becoming our Premium member',
           [
             {
-              text: 'Watch Ad',
+              text: 'Go Premium',
               onPress: () => {
-                setLoading(true), tempFunc();
+                navigation.navigate('ProductsScreen');
               },
+              // onPress: () => {
+              //   setLoading(true), tempFunc();
+              // },
 
               style: 'default',
             },
@@ -777,6 +780,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   const getIsPremiumMember = async () => {
     try {
       const value = await AsyncStorage.getItem('isPremiumMember');
+      console.log('value returned is ', value);
+
       // If value is not found, assume it's false
       return value === 'true' ? true : false;
     } catch (error) {
@@ -789,8 +794,13 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   useEffect(() => {
     getIsPremiumMember()
       .then(value => {
-        Alert.alert('you are premium');
-        setIsPremiumMember(true);
+        if (value) {
+          // Alert.alert('you are premium');
+          setIsPremiumMember(true);
+        } else {
+          // Alert.alert('you are not premium');
+          setIsPremiumMember(false);
+        }
       })
       .catch(error => {
         console.log('Error in useEffect', error);

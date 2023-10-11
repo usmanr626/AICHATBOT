@@ -87,7 +87,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="ChatScreen"
+        initialRouteName="MainScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="MainScreen" component={MainScreen} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
