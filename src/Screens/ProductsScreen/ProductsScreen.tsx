@@ -16,7 +16,7 @@ import {IMAGES} from '../../Assets/Images';
 import {CustomTextButton} from '../../Components/CustomTextButton';
 
 const items = Platform.select({
-  ios: [],
+  ios: ['chatbot_ai'],
   android: ['chatbot_ai'],
 });
 const ProductsScreen = () => {

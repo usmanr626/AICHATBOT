@@ -37,6 +37,7 @@ import {
 import styles from './styles';
 import remoteConfig from '@react-native-firebase/remote-config';
 import DeviceInfo from 'react-native-device-info';
+import {useIsFocused} from '@react-navigation/native';
 
 // const adUnitId = TestIds.INTERSTITIAL;
 const adUnitId = __DEV__
@@ -64,6 +65,8 @@ type ChatMessage = {
 };
 
 const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
+  const isFocused = useIsFocused();
+
   const flatListRef = useRef(null);
   const isAndroid = Platform.OS === 'android';
   const [text, setText] = useState('');
@@ -512,6 +515,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       (Platform.OS === 'ios' && adsEnabledIos) ||
       (Platform.OS === 'android' && adsEnabledAndroid)
     ) {
+      console.log('question limit', questionLimit);
+
       if (questionsAsked > questionLimit && !isPremiumMember) {
         Alert.alert(
           'Limit reached',
@@ -805,7 +810,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
       .catch(error => {
         console.log('Error in useEffect', error);
       });
-  }, []);
+  }, [isFocused]);
 
   // const tempFunc = async () => {
   //   rewarded.show();
