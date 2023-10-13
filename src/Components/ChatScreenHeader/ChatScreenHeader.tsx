@@ -8,12 +8,14 @@ type ChatScreenHeaderPropTypes = {
   onMenuPress: any;
   onMutePress: any;
   onSettingsPress: any;
+  isPremium: boolean;
 };
 
 const ChatScreenHeader = ({
   onMenuPress,
   onMutePress,
   onSettingsPress,
+  isPremium,
 }: ChatScreenHeaderPropTypes) => {
   return (
     <View style={styles.mainContainer}>
@@ -27,17 +29,19 @@ const ChatScreenHeader = ({
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>{LABELS.AiChatbot}</Text>
       </View>
-      <Pressable
-        style={{
-          padding: 10,
-          borderRadius: 20,
-          backgroundColor: 'gold',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        onPress={onMutePress}>
-        <Text style={{color: '#7836ff', fontWeight: 'bold'}}>GO PREMIUM</Text>
-      </Pressable>
+      {isPremium && (
+        <Pressable
+          style={{
+            padding: 10,
+            borderRadius: 20,
+            backgroundColor: 'gold',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={onMutePress}>
+          <Text style={{color: '#7836ff', fontWeight: 'bold'}}>GO PREMIUM</Text>
+        </Pressable>
+      )}
       <Pressable onPress={onSettingsPress}>
         <Image
           source={IMAGES.settingsButton}

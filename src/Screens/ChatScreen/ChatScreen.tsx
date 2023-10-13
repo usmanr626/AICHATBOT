@@ -833,6 +833,7 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
         style={styles.bckGrndRightImageContainer}
       />
       <ChatScreenHeader
+        isPremium={!isPremiumMember}
         onSettingsPress={() => onSettingsPressed()}
         // onMutePress={() => showInterAd()}
         onMutePress={() => goPremium()}
