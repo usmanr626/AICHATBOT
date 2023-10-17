@@ -14,12 +14,13 @@ import * as IAP from 'react-native-iap';
 import styles from './styles';
 import {IMAGES} from '../../Assets/Images';
 import {CustomTextButton} from '../../Components/CustomTextButton';
+import {CustomHeader} from '../../Components/CustomHeader';
 
 const items = Platform.select({
   ios: ['chatbot_ai'],
   android: ['chatbot_ai'],
 });
-const ProductsScreen = () => {
+const ProductsScreen = ({navigation}) => {
   const [purchased, setPurchased] = useState(false);
   const [products, setProducts] = useState(false);
   const [isPremiumMember, setIsPremiumMember] = useState(false);
@@ -31,7 +32,12 @@ const ProductsScreen = () => {
     try {
       await AsyncStorage.setItem('isPremiumMember', 'true');
       console.log('Is Now A Premium Member');
-      Alert.alert('You are now a Premium Member');
+      Alert.alert('Success', 'You are now a premium member!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('ChatScreen'),
+        },
+      ]);
     } catch (error) {
       console.error('Error setting isPremiumMember:', error);
     }
@@ -43,12 +49,14 @@ const ProductsScreen = () => {
         console.log('Error connecting to the store...');
       })
       .then(() => {
+        console.log('Connected to store');
+
         IAP.getProducts({skus: items})
           .catch(e => {
             console.log('Error finding items', e);
           })
           .then(res => {
-            setProducts(res), console.log('RES', res);
+            setProducts(res), console.log('res', res);
           });
 
         IAP.getPurchaseHistory()
@@ -103,7 +111,9 @@ const ProductsScreen = () => {
     purchaseUpdateSubscription = IAP.purchaseUpdatedListener(purchase => {
       // validate(receipt);
       console.log('PURCHASE IS :', purchase);
-      savePurchaseToAsync();
+      setTimeout(() => {
+        savePurchaseToAsync();
+      }, 1000); // Adjust the delay as needed
       setPurchased(true);
     });
 
@@ -128,6 +138,10 @@ const ProductsScreen = () => {
     return (
       <SafeAreaView style={styles.mainContainer}>
         <View style={{top: 20}}>
+          <CustomHeader onPress={() => navigation.goBack()} title={''} />
+        </View>
+
+        <View style={{top: 50}}>
           <Text
             style={{
               color: 'white',
@@ -161,7 +175,12 @@ const ProductsScreen = () => {
   } else {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text>Products Loading...</Text>
+        <Text
+          onPress={async () => {
+            await IAP.requestPurchase({skus: ['chatbot_ai']});
+          }}>
+          Products Loading...
+        </Text>
       </View>
     );
   }

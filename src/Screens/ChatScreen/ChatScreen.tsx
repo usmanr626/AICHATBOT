@@ -560,6 +560,8 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
     );
     // console.log('Formatted Messages:', messages); // Log the formatted messages
 
+    console.log('HERE THE API KEY IS', apiKey);
+
     try {
       setIsSending(true); // Show the activity indicator
       const response = await fetch(

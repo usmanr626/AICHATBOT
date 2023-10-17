@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* AIChatbotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* AIChatbotTests.m */; };
 		0E56BCF32A8FC9340049769E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0E76E4272A8E89630004999A /* GoogleService-Info.plist */; };
+		0E99AD252ADDA57A00A68D5D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E99AD242ADDA57A00A68D5D /* StoreKit.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -33,6 +34,7 @@
 		00E356F21AD99517003FC87E /* AIChatbotTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AIChatbotTests.m; sourceTree = "<group>"; };
 		02B8D0B50A674B31786B20D2 /* Pods-AIChatbot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIChatbot.debug.xcconfig"; path = "Target Support Files/Pods-AIChatbot/Pods-AIChatbot.debug.xcconfig"; sourceTree = "<group>"; };
 		0E76E4272A8E89630004999A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0E99AD242ADDA57A00A68D5D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		13B07F961A680F5B00A75B9A /* AIChatbot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIChatbot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AIChatbot/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = AIChatbot/AppDelegate.mm; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F12BB6D755EDA8B93EC010A5 /* libPods-AIChatbot.a in Frameworks */,
+				0E99AD252ADDA57A00A68D5D /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +104,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0E99AD242ADDA57A00A68D5D /* StoreKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				6C0B270F9A8BF813710B313A /* libPods-AIChatbot.a */,
 				B3ABE75C6488E939AF9E5B3B /* libPods-AIChatbot-AIChatbotTests.a */,

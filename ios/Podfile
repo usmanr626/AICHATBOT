@@ -26,6 +26,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
+pod 'RNIap', :path => '../node_modules/react-native-iap'
 # pod 'Firebase', :modular_headers => true
 # pod 'FirebaseCore', :modular_headers => true
 
