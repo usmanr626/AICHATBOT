@@ -819,6 +819,14 @@ const ChatScreen = ({navigation}: ChatScreenPropTypes) => {
   // };
 
   const goPremium = () => {
+    // Alert.alert('Go Premium', 'Get unlimited searches for lifetime for $4.99', [
+    //   {
+    //     text: 'Cancel',
+    //     onPress: () => console.log('Cancel Pressed'),
+    //     style: 'cancel',
+    //   },
+    //   {text: 'Purchase', onPress: () => console.log('OK Pressed')},
+    // ]);
     navigation.navigate('ProductsScreen');
   };
 
